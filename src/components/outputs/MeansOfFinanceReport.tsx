@@ -6,9 +6,10 @@ type Props = { formData: FormValues };
 export default function MeansOfFinanceReport({ formData }: Props) {
   // Ensure all values are numbers
   const totalInternal = Number(formData.ownerCapital) || 0;
+  const totalSubsidy = Number(formData.capitalSubsidyAmount) || 0;
   const totalTermLoan = Number(formData.termLoanAmount) || 0;
   const totalWC = Number(formData.wcLoanAmount) || 0;
-  const grandTotal = totalInternal + totalTermLoan + totalWC;
+  const grandTotal = totalInternal + totalSubsidy + totalTermLoan + totalWC;
 
   // Helper for ₹ formatting
   const fmt = (n: number) =>
@@ -37,6 +38,12 @@ export default function MeansOfFinanceReport({ formData }: Props) {
             </td>
             <td className="border border-gray-300 p-2 text-right">
               {fmt(totalInternal)}
+            </td>
+          </tr>
+          <tr>
+            <td className="border border-gray-300 p-2">Capital Subsidy</td>
+            <td className="border border-gray-300 p-2 text-right">
+              {fmt(totalSubsidy)}
             </td>
           </tr>
           <tr>

@@ -42,7 +42,7 @@ export default function ProjectedBalanceSheetReport({ formData, data }: Props) {
   return (
     <section className="mb-6">
       <h2 className="uppercase text-lg font-semibold mb-4">
-        Projected Balance Sheet
+        7. Projected Balance Sheet
       </h2>
       <table className="w-full border-collapse border border-gray-300 text-sm">
         <thead>

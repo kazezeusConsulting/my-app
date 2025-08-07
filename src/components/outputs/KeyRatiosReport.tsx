@@ -8,7 +8,7 @@ export default function KeyRatiosReport({ data }: Props) {
 
   return (
     <section className="mb-6">
-      <h2 className="uppercase text-lg font-semibold mb-4">8. Key Ratios</h2>
+      <h2 className="uppercase text-lg font-semibold mb-4">6. Key Ratios</h2>
       <table className="border-collapse border border-gray-300 w-full text-sm">
         <thead>
           <tr className="bg-gray-100">

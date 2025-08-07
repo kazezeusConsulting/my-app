@@ -94,7 +94,7 @@ export default function ProjectedCashFlowReport({ formData, data }: Props) {
   return (
     <section className="mb-6">
       <h2 className="uppercase text-lg font-semibold mb-4">
-        Projected Cash Flow Statement
+        5. Projected Cash Flow Statement
       </h2>
 
       {/* Sources of Funds */}

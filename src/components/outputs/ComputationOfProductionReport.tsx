@@ -75,7 +75,7 @@ export default function ComputationOfProductionReport({ formData, data }: Props)
   return (
     <section className="mb-6">
       <h2 className="uppercase text-lg font-semibold mb-4">
-        11. Computation of Production
+        9. Computation of Production
       </h2>
       <table className="border-collapse border border-gray-300 w-full text-sm">
         <thead>

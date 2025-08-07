@@ -19,8 +19,6 @@ import CoverReport from '@/components/outputs/CoverReport';
 import CostOfProjectReport from '@/components/outputs/CostOfProjectReport';
 import MeansOfFinanceReport from '@/components/outputs/MeansOfFinanceReport';
 import CapitalSubsidyReport from '@/components/outputs/CapitalSubsidyReport';
-import SourcesOfFundReport from '@/components/outputs/SourcesOfFundReport';
-import ApplicationOfFundReport from '@/components/outputs/ApplicationOfFundReport';
 import ProjectedCashFlowReport from '@/components/outputs/ProjectedCashFlowReport';
 import KeyRatiosReport from '@/components/outputs/KeyRatiosReport';
 import ProjectedBalanceSheetReport from '@/components/outputs/ProjectedBalanceSheetReport';
@@ -177,12 +175,6 @@ export default function ReportBuilder() {
 
           <MeansOfFinanceReport formData={formData} />
           <CapitalSubsidyReport formData={formData} />
-          <div className="page-break" />
-
-          <SourcesOfFundReport formData={formData} data={results} />
-          <div className="page-break" />
-
-          <ApplicationOfFundReport data={results} />
           <div className="page-break" />
 
           <ProjectedCashFlowReport formData={formData} data={results} />

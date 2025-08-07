@@ -73,7 +73,7 @@ export default function DSCRReport({ formData, data }: Props) {
   return (
     <section className="mb-6">
       <h2 className="uppercase text-lg font-semibold mb-4">
-        15. Calculation of D.S.C.R.
+        13. Calculation of D.S.C.R.
       </h2>
 
       <table className="border-collapse border border-gray-300 w-full text-sm">
