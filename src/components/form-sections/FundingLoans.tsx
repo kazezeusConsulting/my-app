@@ -20,7 +20,7 @@ export default function FundingLoans({
   const { setValue } = useFormContext<FormValues>();
   const costItems = useWatch({ control, name: "costItems" }) as CostItem[];
   const capPct = useWatch({ control, name: "capitalSubsidyPercent" });
-  const ownerCap = useWatch({ control, name: "ownerCapital" });
+  const capToggle = useWatch({ control, name: "capitalSubsidyToggle" });
 
   const totalCost =
     costItems?.reduce((sum: number, item: CostItem) => sum + Number(item.amount || 0), 0) || 0;
@@ -33,12 +33,16 @@ export default function FundingLoans({
   const wcRequirement =
     costItems?.find((i: CostItem) => i.type === "Working Capital Requirement")?.amount || 0;
 
+  const subsidyAmount = capToggle
+    ? (totalCost * Number(capPct || 0)) / 100
+    : 0;
+
   setValue(
     "termLoanAmount",
-    Math.max(totalCost - totalMargin - Number(ownerCap || 0), 0)
+    Math.max(totalCost - totalMargin - subsidyAmount, 0)
   );
   setValue("wcLoanAmount", wcRequirement);
-  setValue("capitalSubsidyAmount", (totalCost * Number(capPct || 0)) / 100);
+  setValue("capitalSubsidyAmount", subsidyAmount);
   return (
     <section className="border border-slate-200 rounded-md p-6 shadow-sm">
       <h2 className="text-lg font-semibold mb-4 text-slate-700">4️⃣ Funding / Loans</h2>
