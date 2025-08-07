@@ -1,9 +1,9 @@
 // src/components/outputs/SummaryCard.tsx
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { ProjectionResult } from "@/utils/calculateProjections";
+import type { Projection } from "@/types/formTypes";
 
 type SummaryCardProps = {
-  data: ProjectionResult[];
+  data: Projection[];
 };
 
 export default function SummaryCard({ data }: SummaryCardProps) {

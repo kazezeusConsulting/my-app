@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { ProjectionResult } from "@/utils/calculateProjections";
+import type { Projection } from "@/types/formTypes";
 
 type ProjectionTableProps = {
-  data: ProjectionResult[];
+  data: Projection[];
 };
 
 export default function ProjectionTable({ data }: ProjectionTableProps) {

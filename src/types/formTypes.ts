@@ -58,11 +58,12 @@ export interface SalesRevenue {
 }
 
 export interface ExpenseAssumptions {
-  rawMaterialCostPct: number;
-  wagesLabourPct: number;
-  electricityOverheadPct: number;
-  sellingAdminPct: number;
-  fixedMonthlyCosts: number;
+  rawMaterialMonthly: number;
+  wagesLabourMonthly: number;
+  electricityMonthly: number;
+  otherOverheadsMonthly: number;
+  sellingExpensesMonthly: number;
+  adminExpensesMonthly: number;
 }
 
 export interface WorkingCapital {

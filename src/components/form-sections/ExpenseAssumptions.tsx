@@ -11,11 +11,11 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={control}
-          name="rawMaterialCostPct"
+          name="rawMaterialMonthly"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Raw Material Cost %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+              <FormLabel>Raw Material Cost (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -23,11 +23,11 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
 
         <FormField
           control={control}
-          name="wagesLabourPct"
+          name="wagesLabourMonthly"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Wages & Labour %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+              <FormLabel>Wages & Labour (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -35,11 +35,11 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
 
         <FormField
           control={control}
-          name="electricityOverheadPct"
+          name="electricityMonthly"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Electricity / Overhead %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+              <FormLabel>Electricity / Overhead (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -47,11 +47,11 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
 
         <FormField
           control={control}
-          name="sellingAdminPct"
+          name="otherOverheadsMonthly"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Selling / Admin %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+              <FormLabel>Other Overheads (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -59,10 +59,22 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
 
         <FormField
           control={control}
-          name="fixedMonthlyCosts"
+          name="sellingExpensesMonthly"
           render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel>Fixed Monthly Costs (e.g., Rent)</FormLabel>
+            <FormItem>
+              <FormLabel>Selling Expenses (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="adminExpensesMonthly"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Administrative Expenses (Monthly)</FormLabel>
               <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
