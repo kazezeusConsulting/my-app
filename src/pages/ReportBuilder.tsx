@@ -92,11 +92,12 @@ export default function ReportBuilder() {
       workingHours: 8,
 
       // Expense Assumptions
-      rawMaterialCostPct: 40,
-      wagesLabourPct: 10,
-      electricityOverheadPct: 5,
-      sellingAdminPct: 10,
-      fixedMonthlyCosts: 0,
+      rawMaterialMonthly: 0,
+      wagesLabourMonthly: 0,
+      electricityMonthly: 0,
+      otherOverheadsMonthly: 0,
+      sellingExpensesMonthly: 0,
+      adminExpensesMonthly: 0,
 
       // Working Capital
       inventoryDays: 30,

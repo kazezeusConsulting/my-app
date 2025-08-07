@@ -17,10 +17,12 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const unitsSoldYear1      = Number(data.unitsSoldYear1) || 0;
   const avgSellingPriceYear1= Number(data.avgSellingPriceYear1) || 0;
 
-  const rawMaterialCostPct  = (Number(data.rawMaterialCostPct) || 0) / 100;
-  const wagesLabourPct      = (Number(data.wagesLabourPct) || 0) / 100;
-  const electricityPct      = (Number(data.electricityOverheadPct) || 0) / 100;
-  const sellingAdminPct     = (Number(data.sellingAdminPct) || 0) / 100;
+  const rawMaterialMonthly   = Number(data.rawMaterialMonthly) || 0;
+  const wagesLabourMonthly   = Number(data.wagesLabourMonthly) || 0;
+  const electricityMonthly   = Number(data.electricityMonthly) || 0;
+  const otherOverheadsMonthly= Number(data.otherOverheadsMonthly) || 0;
+  const sellingMonthly       = Number(data.sellingExpensesMonthly) || 0;
+  const adminMonthly         = Number(data.adminExpensesMonthly) || 0;
 
   const inventoryDays       = Number(data.inventoryDays) || 0;
   const debtorDays          = Number(data.debtorDays) || 0;
@@ -33,7 +35,6 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
   const method              = data.method;
   const assetLife           = Number(data.assetLife) || 1;
-  const depRatePct          = 0;
 
   const termLoanAmount      = Number(data.termLoanAmount) || 0;
   const termLoanInterest    = (Number(data.termLoanInterest) || 0) / 100;
@@ -67,6 +68,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
   let prevReserve = 0;
   let prevClosingCash = openingBankBalance;
+  let wdvOpening = totalFixedAssets;
 
   // 3. Loop through each projection year
   for (let i = 0; i < span; i++) {
@@ -75,12 +77,15 @@ export default function calculateProjections(data: FormValues): Projection[] {
     // Revenue growth
     const revenue = baseYearSales * Math.pow(1 + annualGrowthRate, i);
 
-    // Cost of Sales breakdown
-    const purchase       = revenue * rawMaterialCostPct;
-    const labourAndWages = revenue * wagesLabourPct;
-    const electricityExp = revenue * electricityPct;
-    const otherOverheads = revenue * sellingAdminPct;
+    // Cost of Sales breakdown (annualized from monthly values)
+    const purchase       = rawMaterialMonthly * 12;
+    const labourAndWages = wagesLabourMonthly * 12;
+    const electricityExp = electricityMonthly * 12;
+    const otherOverheads = otherOverheadsMonthly * 12;
     const costOfSales    = purchase + labourAndWages + electricityExp + otherOverheads;
+
+    const sellingExpenses = sellingMonthly * 12;
+    const adminExpenses   = adminMonthly * 12;
 
     // Opening/Closing stock
     const openingStock = i === 0 ? openingInventory : results[i - 1].closingStock ?? 0;
@@ -94,19 +99,22 @@ export default function calculateProjections(data: FormValues): Projection[] {
     // Depreciation
     let depreciation = 0;
     let rateOfDepreciation = 0;
+    let writtenDownValue = 0;
     if (method === 'SLM') {
       rateOfDepreciation = 1 / assetLife;
       depreciation = totalFixedAssets * rateOfDepreciation;
+      writtenDownValue = totalFixedAssets - depreciation * (i + 1);
     } else {
-      rateOfDepreciation = depRatePct;
-      const openVal = totalFixedAssets * Math.pow(1 - depRatePct, i);
-      depreciation = openVal * depRatePct;
+      rateOfDepreciation = 2 / assetLife;
+      depreciation = wdvOpening * rateOfDepreciation;
+      writtenDownValue = wdvOpening - depreciation;
+      wdvOpening = writtenDownValue;
     }
-    const writtenDownValue = totalFixedAssets - depreciation * (i + 1);
 
     // Net Profit & margin
-    const netProfit   = revenue - costOfSales - depreciation;
-    const profitMargin= revenue ? netProfit / revenue : 0;
+    const netProfit   =
+      revenue - costOfSales - sellingExpenses - adminExpenses - depreciation;
+    const profitMargin = revenue ? netProfit / revenue : 0;
 
     // Working Capital
     const workingCapital = ((inventoryDays + debtorDays - creditorDays) / 365) * revenue;
@@ -202,6 +210,8 @@ export default function calculateProjections(data: FormValues): Projection[] {
       electricityExpenses: electricityExp,
       labourAndWages,
       otherOverheads,
+      sellingExpenses,
+      adminExpenses,
       costOfProduction: costOfSales,
       addition: fixedAssetAddition,
       writtenDownValue,
