@@ -1,6 +1,7 @@
 // src/pages/ReportBuilder.tsx
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { Form } from '@/components/ui/form';
 import type { FormValues, Projection } from '@/types/formTypes';
 import calculateProjections from '@/utils/calculateProjections';
@@ -36,6 +37,8 @@ import { exportToPdf } from '@/components/PdfExporter';
 export default function ReportBuilder() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [results, setResults] = useState<Projection[]>([]);
+  const { getToken } = useAuth();
+  const { user } = useUser();
 
   const defaultSpan = 5;
   const form = useForm<FormValues>({
@@ -121,7 +124,7 @@ export default function ReportBuilder() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setFormData(data);
     const raw = calculateProjections(data);
     // Guard against NaN years
@@ -130,6 +133,25 @@ export default function ReportBuilder() {
       year: Number.isFinite(p.year) ? p.year : i + 1,
     }));
     setResults(projections);
+
+    try {
+      const token = await getToken();
+      await fetch('/api/reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          clientName: data.ownerName,
+          projectName: data.businessName,
+          data,
+          userEmail: user?.primaryEmailAddress?.emailAddress,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save report', err);
+    }
   };
 
   return (
