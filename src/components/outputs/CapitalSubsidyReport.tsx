@@ -4,19 +4,11 @@ import type { FormValues } from '@/types/formTypes';
 type Props = { formData: FormValues };
 
 export default function CapitalSubsidyReport({ formData }: Props) {
-  // Ensure all values are numbers
-  const machineryEquipment = parseInt(formData.machineryEquipment as any) || 0;
-  const furnitureFixtures = parseInt(formData.furnitureFixtures as any) || 0;
-  const otherFixedAssets = parseInt(formData.otherFixedAssets as any) || 0;
-  const preOpExpenses = parseInt(formData.preOpExpenses as any) || 0;
-  const workingCapitalRequirement = parseInt(formData.workingCapitalRequirement as any) || 0;
-  const capitalSubsidyPercent = parseInt(formData.capitalSubsidyPercent as any) || 0;
-  const totalCost =
-    machineryEquipment +
-    furnitureFixtures +
-    otherFixedAssets +
-    preOpExpenses +
-    workingCapitalRequirement;
+  const capitalSubsidyPercent = Number(formData.capitalSubsidyPercent) || 0;
+  const totalCost = (formData.costItems || []).reduce(
+    (sum, item) => sum + (Number(item.amount) || 0),
+    0
+  );
   const subsidyAmount = (totalCost * capitalSubsidyPercent) / 100;
 
   return (

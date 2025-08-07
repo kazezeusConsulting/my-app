@@ -3,8 +3,10 @@ import type { FormValues, Projection } from "@/types/formTypes";
 
 export default function calculateProjections(data: FormValues): Projection[] {
   // 1. Cast all form inputs to numbers (HTML inputs produce strings)
-  const preOpExpenses = parseInt(data.preOpExpenses as any) || 0;
-  const workingCapitalRequirement = parseInt(data.workingCapitalRequirement as any) || 0;
+  const getAmount = (type: string) =>
+    Number(data.costItems.find((i) => i.type === type)?.amount) || 0;
+  const preOpExpenses = getAmount('Pre-operating Expenses');
+  const workingCapitalRequirement = getAmount('Working Capital Requirement');
   const startYear           = new Date(data.projectStartDate).getFullYear();
   const span                = Number(data.projectionSpan) || 0;
 
@@ -24,14 +26,14 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const debtorDays          = Number(data.debtorDays) || 0;
   const creditorDays        = Number(data.creditorDays) || 0;
 
-  const machineryEquipment  = Number(data.machineryEquipment) || 0;
-  const furnitureFixtures   = Number(data.furnitureFixtures) || 0;
-  const otherFixedAssets    = Number(data.otherFixedAssets) || 0;
+  const machineryEquipment  = getAmount('Machinery & Equipment');
+  const furnitureFixtures   = getAmount('Furniture / Fixtures');
+  const otherFixedAssets    = getAmount('Other Fixed Assets');
   const totalFixedAssets    = machineryEquipment + furnitureFixtures + otherFixedAssets;
 
   const method              = data.method;
   const assetLife           = Number(data.assetLife) || 1;
-  const depRatePct          = (Number(data.contingencyPercent) || 0) / 100;
+  const depRatePct          = 0;
 
   const termLoanAmount      = Number(data.termLoanAmount) || 0;
   const termLoanInterest    = (Number(data.termLoanInterest) || 0) / 100;
