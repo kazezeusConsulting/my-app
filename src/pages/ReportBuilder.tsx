@@ -13,7 +13,6 @@ import FundingLoans from '@/components/form-sections/FundingLoans';
 import SalesRevenue from '@/components/form-sections/SalesRevenue';
 import ExpenseAssumptions from '@/components/form-sections/ExpenseAssumptions';
 import WorkingCapital from '@/components/form-sections/WorkingCapital';
-import Depreciation from '@/components/form-sections/Depreciation';
 import LedgerCashflow from '@/components/form-sections/LedgerCashflow';
 
 import CoverReport from '@/components/outputs/CoverReport';
@@ -105,11 +104,6 @@ export default function ReportBuilder() {
       creditorDays: 30,
       advanceFromCustomersPercent: 0,
 
-      // Depreciation
-      method: 'WDV',
-      assetLife: 5,
-      depreciationRate: 10,
-
       // Ledger / Cashflow
       openingBankBalance: 0,
       openingInventory: 0,
@@ -162,7 +156,6 @@ export default function ReportBuilder() {
           <SalesRevenue control={form.control} />
           <ExpenseAssumptions control={form.control} />
           <WorkingCapital control={form.control} />
-          <Depreciation control={form.control} />
           <LedgerCashflow control={form.control} />
 
           <button
