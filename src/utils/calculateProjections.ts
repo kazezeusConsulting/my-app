@@ -3,8 +3,8 @@ import type { FormValues, Projection } from "@/types/formTypes";
 
 export default function calculateProjections(data: FormValues): Projection[] {
   // 1. Cast all form inputs to numbers (HTML inputs produce strings)
-  const preOpExpenses = parseInt(data.preOpExpenses as any) || 0;
-  const workingCapitalRequirement = parseInt(data.workingCapitalRequirement as any) || 0;
+  const preOpExpenses = Number(data.preOpExpenses) || 0;
+  const workingCapitalRequirement = Number(data.workingCapitalRequirement) || 0;
   const startYear           = new Date(data.projectStartDate).getFullYear();
   const span                = Number(data.projectionSpan) || 0;
 
@@ -31,7 +31,9 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
   const method              = data.method;
   const assetLife           = Number(data.assetLife) || 1;
-  const depRatePct          = (Number(data.contingencyPercent) || 0) / 100;
+  // Depreciation rate for WDV previously pulled from contingencyPercent,
+  // which is unrelated. Use asset life to derive a rate instead.
+  const depRatePct          = 1 / assetLife;
 
   const termLoanAmount      = Number(data.termLoanAmount) || 0;
   const termLoanInterest    = (Number(data.termLoanInterest) || 0) / 100;
