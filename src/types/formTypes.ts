@@ -30,6 +30,7 @@ export interface CostItem {
   type: string;
   marginPercent: number;
   amount: number;
+  depreciationRate?: number;
 }
 
 export interface FundingLoans {

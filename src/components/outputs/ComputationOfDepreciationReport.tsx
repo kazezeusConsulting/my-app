@@ -14,9 +14,8 @@ export default function ComputationOfDepreciationReport({ data }: Props) {
     if (fmt === 'currency') {
       return '₹' + val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
     }
-    // Percent format
     return (
-      val.toLocaleString('en-IN', {
+      (val * 100).toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }) + '%'
@@ -34,7 +33,7 @@ export default function ComputationOfDepreciationReport({ data }: Props) {
       key: 'rateOfDepreciation',
       format: 'percent',
     },
-    { label: 'Addition', key: 'addition', format: 'currency' },
+    { label: 'Addition', key: 'fixedAssetAddition', format: 'currency' },
     { label: 'Less: Depreciation', key: 'depreciation', format: 'currency' },
     {
       label: 'Written-Down Value',

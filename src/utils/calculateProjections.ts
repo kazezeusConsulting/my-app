@@ -34,10 +34,23 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const machineryEquipment = getAmount("Machinery & Equipment");
   const furnitureFixtures = getAmount("Furniture / Fixtures");
   const otherFixedAssets = getAmount("Other Fixed Assets");
-  const totalFixedAssets = machineryEquipment + furnitureFixtures + otherFixedAssets;
-
   const method = data.method;
-  const depRate = (Number(data.depreciationRate) || 0) / 100;
+  const getDepRate = (type: string) =>
+    ((Number(data.costItems.find((i) => i.type === type)?.depreciationRate) ||
+      Number(data.depreciationRate) ||
+      0) /
+      100);
+  const fixedAssets = [
+    { amount: machineryEquipment, rate: getDepRate("Machinery & Equipment") },
+    { amount: furnitureFixtures, rate: getDepRate("Furniture / Fixtures") },
+    { amount: otherFixedAssets, rate: getDepRate("Other Fixed Assets") },
+  ];
+  const totalFixedAssets = fixedAssets.reduce((sum, a) => sum + a.amount, 0);
+  const avgDepRate =
+    totalFixedAssets > 0
+      ? fixedAssets.reduce((sum, a) => sum + a.amount * a.rate, 0) /
+        totalFixedAssets
+      : 0;
 
   const termLoanAmount = Number(data.termLoanAmount) || 0;
   const termLoanInterest = (Number(data.termLoanInterest) || 0) / 100;
@@ -69,7 +82,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
   // 3. Initialize carry-forward variables
   let prevReserve = 0;
   let prevClosingCash = openingBankBalance;
-  let wdvOpening = totalFixedAssets;
+  const wdvOpenings = fixedAssets.map((f) => f.amount);
   const cashCreditOutstanding = wcLoanAmount;
   const subsidyOutstanding = capSubToggle
     ? (totalFixedAssets + preOpExpenses + workingCapitalRequirement) * capSubPct
@@ -105,12 +118,19 @@ export default function calculateProjections(data: FormValues): Projection[] {
     let depreciation = 0;
     let writtenDownValue = 0;
     if (method === "SLM") {
-      depreciation = totalFixedAssets * depRate;
+      depreciation = fixedAssets.reduce(
+        (sum, a) => sum + a.amount * a.rate,
+        0
+      );
       writtenDownValue = totalFixedAssets - depreciation * (i + 1);
     } else {
-      depreciation = wdvOpening * depRate;
-      writtenDownValue = wdvOpening - depreciation;
-      wdvOpening = writtenDownValue;
+      depreciation = 0;
+      for (let j = 0; j < wdvOpenings.length; j++) {
+        const dep = wdvOpenings[j] * fixedAssets[j].rate;
+        depreciation += dep;
+        wdvOpenings[j] -= dep;
+      }
+      writtenDownValue = wdvOpenings.reduce((sum, val) => sum + val, 0);
     }
 
     // Net profit & margins
@@ -187,7 +207,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
       openingCashBalance: i === 0 ? openingBankBalance : results[i - 1].closingCashBalance,
       drawings: annualDrawings,
       costOfProduction,
-      rateOfDepreciation: depRate,
+      rateOfDepreciation: avgDepRate,
     });
   }
 

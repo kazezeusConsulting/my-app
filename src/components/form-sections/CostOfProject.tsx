@@ -25,6 +25,7 @@ export default function CostOfProject({ control }: { control: Control<FormValues
           <tr className="bg-slate-100">
             <th className="p-2 text-left border">Type</th>
             <th className="p-2 text-right border">Margin %</th>
+            <th className="p-2 text-right border">Dep %</th>
             <th className="p-2 text-right border">Amount</th>
             <th className="p-2 border"></th>
           </tr>
@@ -74,6 +75,20 @@ export default function CostOfProject({ control }: { control: Control<FormValues
               <td className="p-2 border">
                 <FormField
                   control={control}
+                  name={`costItems.${index}.depreciationRate`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="number" step="0.01" className="text-right" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </td>
+              <td className="p-2 border">
+                <FormField
+                  control={control}
                   name={`costItems.${index}.amount`}
                   render={({ field }) => (
                     <FormItem>
@@ -97,7 +112,7 @@ export default function CostOfProject({ control }: { control: Control<FormValues
       <Button
         type="button"
         className="mt-4"
-        onClick={() => append({ type: "", marginPercent: 0, amount: 0 })}
+        onClick={() => append({ type: "", marginPercent: 0, depreciationRate: 0, amount: 0 })}
       >
         Add Row
       </Button>
