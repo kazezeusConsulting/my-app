@@ -124,9 +124,14 @@ export default function calculateProjections(data: FormValues): Projection[] {
     const netProfit = revenue - costOfProduction - inwardFreight - adminExpenses - depreciation;
     const profitMargin = revenue ? netProfit / revenue : 0;
     const surplus = netProfit;
-    const reserveAndSurplus =
-      i === 0 ? surplus - annualDrawings : prevReserve + surplus - annualDrawings;
-    prevReserve = reserveAndSurplus;
+
+    // Capital account (reserve & surplus) should carry forward the
+    // previous year's balance. Current year's net profit (surplus) is
+    // added to the next year, not the same year. Similarly, drawings
+    // reduce next year's opening balance. For the very first year we
+    // start from base capital, so reserveAndSurplus begins at 0.
+    const reserveAndSurplus = prevReserve;
+    prevReserve += surplus - annualDrawings;
 
     // Financing moves
     const subsidyIncrease = i === 0 && capSubToggle ? subsidyOutstanding : 0;
