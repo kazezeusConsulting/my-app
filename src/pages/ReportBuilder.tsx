@@ -78,19 +78,15 @@ export default function ReportBuilder() {
       termLoanMoratorium: 0,
       wcLoanAmount: 0,
       wcLoanInterest: 0,
-      wcLoanTenure: 0,
       capitalSubsidyToggle: false,
       capitalSubsidyPercent: 0,
+      capitalSubsidyAmount: 0,
       loanProcessingFeePercent: 0,
 
       // Sales & Revenue
-      baseYearSales: 0,
+      products: [{ name: '', unitPrice: 0, quantity: 0, unit: '' }],
       annualGrowthRate: 10,
-      avgSellingPriceYear1: 0,
-      unitsSoldYear1: 0,
       priceInflation: 5,
-      // <— HERE: ensure this is always an array of length = projectionSpan
-      capacityUtilization: Array(defaultSpan).fill(0),
       workingDays: 300,
       workingHours: 8,
 
@@ -99,7 +95,8 @@ export default function ReportBuilder() {
       wagesLabourMonthly: 0,
       electricityMonthly: 0,
       otherOverheadsMonthly: 0,
-      sellingExpensesMonthly: 0,
+      outwardFreightMonthly: 0,
+      inwardFreightMonthly: 0,
       adminExpensesMonthly: 0,
 
       // Working Capital
@@ -111,6 +108,7 @@ export default function ReportBuilder() {
       // Depreciation
       method: 'WDV',
       assetLife: 5,
+      depreciationRate: 10,
 
       // Ledger / Cashflow
       openingBankBalance: 0,
@@ -118,8 +116,7 @@ export default function ReportBuilder() {
       openingDebtors: 0,
       openingCreditors: 0,
       monthlyDrawings: 0,
-      taxRate: 30,
-      gstRate: 18,
+      taxPercentage: 18,
       carryForwardEarnings: false,
     },
   });

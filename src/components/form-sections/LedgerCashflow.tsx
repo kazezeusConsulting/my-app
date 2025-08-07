@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Control } from "react-hook-form";
 import type { FormValues } from "@/types/formTypes";
 
@@ -72,23 +73,22 @@ export default function LedgerCashflow({ control }: { control: Control<FormValue
 
         <FormField
           control={control}
-          name="taxRate"
+          name="taxPercentage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tax Rate %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="gstRate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>GST Rate %</FormLabel>
-              <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+              <FormLabel>Tax Percentage</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[0,5,12,18,28].map((rate) => (
+                      <SelectItem key={rate} value={String(rate)}>{rate}%</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

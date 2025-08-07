@@ -40,19 +40,23 @@ export interface FundingLoans {
   termLoanMoratorium: number;
   wcLoanAmount: number;        // WORKING CAPITAL LOAN on cover
   wcLoanInterest: number;
-  wcLoanTenure: number;
   capitalSubsidyToggle: boolean;
   capitalSubsidyPercent: number;
+  capitalSubsidyAmount: number;
   loanProcessingFeePercent: number;
 }
 
+export interface Product {
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  unit: string;
+}
+
 export interface SalesRevenue {
-  baseYearSales: number;
+  products: Product[];
   annualGrowthRate: number;
-  avgSellingPriceYear1: number;
-  unitsSoldYear1: number;
   priceInflation: number;
-  capacityUtilization: number[];
   workingDays: number;
   workingHours: number;
 }
@@ -62,7 +66,8 @@ export interface ExpenseAssumptions {
   wagesLabourMonthly: number;
   electricityMonthly: number;
   otherOverheadsMonthly: number;
-  sellingExpensesMonthly: number;
+  outwardFreightMonthly: number;
+  inwardFreightMonthly: number;
   adminExpensesMonthly: number;
 }
 
@@ -76,6 +81,7 @@ export interface WorkingCapital {
 export interface Depreciation {
   method: 'WDV' | 'SLM';
   assetLife: number;
+  depreciationRate: number;
 }
 
 export interface LedgerCashflow {
@@ -84,8 +90,7 @@ export interface LedgerCashflow {
   openingDebtors?: number;
   openingCreditors?: number;
   monthlyDrawings: number;
-  taxRate: number;
-  gstRate: number;
+  taxPercentage: number;
   carryForwardEarnings: boolean;
 }
 
@@ -119,8 +124,6 @@ export interface Projection {
   closingCashBalance?: number;
   openingStock?: number;
   closingStock?: number;
-  netSale?: number;
-  avgSalePrice?: number;
   grossSale?: number;
   purchase?: number;
   electricityExpenses?: number;
@@ -130,7 +133,8 @@ export interface Projection {
   addition?: number;
   writtenDownValue?: number;
   rateOfDepreciation?: number;
-  sellingExpenses?: number;
+  outwardFreight?: number;
+  inwardFreight?: number;
   adminExpenses?: number;
 
 }

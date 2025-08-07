@@ -1,4 +1,3 @@
-// src/components/form-sections/SalesRevenue.tsx
 import { Input } from "@/components/ui/input";
 import {
   FormField,
@@ -7,7 +6,9 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import type { Control } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
 import type { FormValues } from "@/types/formTypes";
 
 export default function SalesRevenue({
@@ -15,26 +16,103 @@ export default function SalesRevenue({
 }: {
   control: Control<FormValues>;
 }) {
+  const { fields, append, remove } = useFieldArray({ control, name: "products" });
   return (
     <section className="border border-slate-200 rounded-md p-6 shadow-sm">
       <h2 className="text-lg font-semibold mb-4 text-slate-700">
         5️⃣ Sales & Revenue Assumptions
       </h2>
+      <table className="w-full text-sm border-collapse mb-4">
+        <thead>
+          <tr className="bg-slate-100">
+            <th className="p-2 text-left border">Product</th>
+            <th className="p-2 text-right border">Unit Price</th>
+            <th className="p-2 text-right border">Quantity</th>
+            <th className="p-2 text-left border">Unit</th>
+            <th className="p-2 border"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {fields.map((field, index) => (
+            <tr key={field.id}>
+              <td className="p-2 border">
+                <FormField
+                  control={control}
+                  name={`products.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </td>
+              <td className="p-2 border">
+                <FormField
+                  control={control}
+                  name={`products.${index}.unitPrice`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="number" className="text-right" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </td>
+              <td className="p-2 border">
+                <FormField
+                  control={control}
+                  name={`products.${index}.quantity`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="number" className="text-right" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </td>
+              <td className="p-2 border">
+                <FormField
+                  control={control}
+                  name={`products.${index}.unit`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </td>
+              <td className="p-2 border text-center">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => remove(index)}
+                >
+                  Remove
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Button
+        type="button"
+        onClick={() => append({ name: "", unitPrice: 0, quantity: 0, unit: "" })}
+        className="mb-4"
+      >
+        Add Product
+      </Button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          control={control}
-          name="baseYearSales"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Base Year Sales</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={control}
           name="annualGrowthRate"
@@ -43,34 +121,6 @@ export default function SalesRevenue({
               <FormLabel>Annual Sales Growth %</FormLabel>
               <FormControl>
                 <Input type="number" step="0.01" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="avgSellingPriceYear1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Avg. Selling Price (Year 1)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="unitsSoldYear1"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Units Sold in Year 1</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -89,41 +139,6 @@ export default function SalesRevenue({
               <FormMessage />
             </FormItem>
           )}
-        />
-
-        <FormField
-          control={control}
-          name="capacityUtilization"
-          render={({ field }) => {
-            // ensure we never map on undefined
-            const values: number[] = Array.isArray(field.value)
-              ? field.value
-              : [];
-            return (
-              <FormItem className="md:col-span-2">
-                <FormLabel>Capacity Utilization (% per Year)</FormLabel>
-                <FormControl>
-                  <div className="flex space-x-2">
-                    {values.map((val, idx) => (
-                      <Input
-                        key={idx}
-                        type="number"
-                        value={val}
-                        onChange={(e) => {
-                          // copy and update
-                          const newArr = [...values];
-                          newArr[idx] = Number(e.target.value);
-                          field.onChange(newArr);
-                        }}
-                        className="w-16"
-                      />
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
         />
 
         <FormField

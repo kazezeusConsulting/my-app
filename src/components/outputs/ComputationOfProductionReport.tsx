@@ -9,7 +9,7 @@ type Props = {
 type RowFormat = 'number' | 'currency' | 'percent';
 
 // extended keys for formData
-type ExtendedKey = 'workingHours' | 'workingDays' | 'capacityUtilization';
+type ExtendedKey = 'workingHours' | 'workingDays';
 type Key = keyof Projection | ExtendedKey;
 
 export default function ComputationOfProductionReport({ formData, data }: Props) {
@@ -53,12 +53,6 @@ export default function ComputationOfProductionReport({ formData, data }: Props)
       showTotal: false,
     },
     {
-      label: 'Capacity Utilisation (%)',
-      key: 'capacityUtilization',
-      format: 'percent',
-      showTotal: false,
-    },
-    {
       label: 'Opening Stock (₹)',
       key: 'openingStock',
       format: 'currency',
@@ -67,18 +61,6 @@ export default function ComputationOfProductionReport({ formData, data }: Props)
     {
       label: 'Less: Closing Stock (₹)',
       key: 'closingStock',
-      format: 'currency',
-      showTotal: false,
-    },
-    {
-      label: 'Net Sale (₹)',
-      key: 'netSale',
-      format: 'currency',
-      showTotal: false,
-    },
-    {
-      label: 'Avg Sale Price (₹)',
-      key: 'avgSalePrice',
       format: 'currency',
       showTotal: false,
     },
@@ -115,11 +97,9 @@ export default function ComputationOfProductionReport({ formData, data }: Props)
         <tbody>
           {rows.map(({ label, key, format, showTotal }) => {
             // build per-year values for this row
-            const values = data.map((d, i) => {
+            const values = data.map((d) => {
               if (key === 'workingHours') return formData.workingHours;
               if (key === 'workingDays') return formData.workingDays;
-              if (key === 'capacityUtilization')
-                return formData.capacityUtilization[i] ?? 0;
               // otherwise pull from projection
               return (d[key as keyof Projection] ?? 0) as number;
             });

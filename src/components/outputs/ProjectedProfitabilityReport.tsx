@@ -22,9 +22,10 @@ export default function ProjectedProfitabilityReport({ data }: Props) {
   const electricity      = data.map((d) => d.electricityExpenses ?? 0);
   const labour           = data.map((d) => d.labourAndWages ?? 0);
   const overheads        = data.map((d) => d.otherOverheads ?? 0);
+  const outwardFreight   = data.map((d) => d.outwardFreight ?? 0);
   const openingStock     = data.map((d) => d.openingStock ?? 0);
   const closingStock     = data.map((d) => d.closingStock ?? 0);
-  const sellingExpenses  = data.map((d) => d.sellingExpenses ?? 0);
+  const inwardFreight    = data.map((d) => d.inwardFreight ?? 0);
   const adminExpenses    = data.map((d) => d.adminExpenses ?? 0);
   const depreciation     = data.map((d) => d.depreciation);
   const netProfit        = data.map((d) => d.netProfit);
@@ -33,7 +34,7 @@ export default function ProjectedProfitabilityReport({ data }: Props) {
   // Computed metrics
   const grossProfit      = revenue.map((r, i) => r - costOfSales[i]);
   const totalExpenses    = data.map((_, i) =>
-                          sellingExpenses[i] + adminExpenses[i] + depreciation[i]);
+                          inwardFreight[i] + adminExpenses[i] + depreciation[i]);
   const sum  = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
   const avg  = (arr: number[]) => (arr.length ? sum(arr) / arr.length : 0);
 
@@ -50,10 +51,11 @@ export default function ProjectedProfitabilityReport({ data }: Props) {
     { label: '   Electricity',            values: electricity },
     { label: '   Labour & Wages',         values: labour },
     { label: '   Other Overheads',        values: overheads },
+    { label: '   Outward Freight',        values: outwardFreight },
     { label: '   Add: Opening Stock',     values: openingStock },
     { label: '   Less: Closing Stock',    values: closingStock },
     { label: 'C) Gross Profit (A–B)',     values: grossProfit },
-    { label: 'D) Selling Expenses',       values: sellingExpenses },
+    { label: 'D) Inward Freight',         values: inwardFreight },
     { label: 'E) Administrative Expenses',values: adminExpenses },
     { label: 'F) Depreciation',           values: depreciation },
     { label: 'Total (D+E+F)',             values: totalExpenses },

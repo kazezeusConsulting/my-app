@@ -59,10 +59,22 @@ export default function ExpenseAssumptions({ control }: { control: Control<FormV
 
         <FormField
           control={control}
-          name="sellingExpensesMonthly"
+          name="outwardFreightMonthly"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Selling Expenses (Monthly)</FormLabel>
+              <FormLabel>Outward Freight (Monthly)</FormLabel>
+              <FormControl><Input type="number" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="inwardFreightMonthly"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Inward Freight (Monthly)</FormLabel>
               <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>

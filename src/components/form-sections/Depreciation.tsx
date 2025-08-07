@@ -43,6 +43,29 @@ export default function Depreciation({ control }: { control: Control<FormValues>
             </FormItem>
           )}
         />
+
+        <FormField
+          control={control}
+          name="depreciationRate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Depreciation Rate %</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={String(field.value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select rate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[10,15,40].map((r) => (
+                      <SelectItem key={r} value={String(r)}>{r}%</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </section>
   );
