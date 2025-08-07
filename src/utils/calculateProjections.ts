@@ -70,8 +70,8 @@ export default function calculateProjections(data: FormValues): Projection[] {
   let prevReserve = 0;
   let prevClosingCash = openingBankBalance;
   let wdvOpening = totalFixedAssets;
-  let cashCreditOutstanding = wcLoanAmount;
-  let subsidyOutstanding = capSubToggle
+  const cashCreditOutstanding = wcLoanAmount;
+  const subsidyOutstanding = capSubToggle
     ? (totalFixedAssets + preOpExpenses + workingCapitalRequirement) * capSubPct
     : 0;
 
