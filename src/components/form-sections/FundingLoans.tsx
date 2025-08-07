@@ -33,6 +33,8 @@ export default function FundingLoans({
   const wcRequirement =
     costItems?.find((i: CostItem) => i.type === "Working Capital Requirement")?.amount || 0;
 
+  setValue("ownerCapital", totalMargin);
+
   const subsidyAmount = capToggle
     ? (totalCost * Number(capPct || 0)) / 100
     : 0;
@@ -53,7 +55,7 @@ export default function FundingLoans({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Owner Capital</FormLabel>
-              <FormControl><Input type="number" {...field} /></FormControl>
+              <FormControl><Input type="number" readOnly {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
