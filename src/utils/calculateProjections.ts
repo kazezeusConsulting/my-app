@@ -34,12 +34,9 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const machineryEquipment = getAmount("Machinery & Equipment");
   const furnitureFixtures = getAmount("Furniture / Fixtures");
   const otherFixedAssets = getAmount("Other Fixed Assets");
-  const method = data.method;
   const getDepRate = (type: string) =>
-    ((Number(data.costItems.find((i) => i.type === type)?.depreciationRate) ||
-      Number(data.depreciationRate) ||
-      0) /
-      100);
+    (Number(data.costItems.find((i) => i.type === type)?.depreciationRate) || 0) /
+    100;
   const fixedAssets = [
     { amount: machineryEquipment, rate: getDepRate("Machinery & Equipment") },
     { amount: furnitureFixtures, rate: getDepRate("Furniture / Fixtures") },
@@ -116,22 +113,12 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
     // Depreciation & WDV
     let depreciation = 0;
-    let writtenDownValue = 0;
-    if (method === "SLM") {
-      depreciation = fixedAssets.reduce(
-        (sum, a) => sum + a.amount * a.rate,
-        0
-      );
-      writtenDownValue = totalFixedAssets - depreciation * (i + 1);
-    } else {
-      depreciation = 0;
-      for (let j = 0; j < wdvOpenings.length; j++) {
-        const dep = wdvOpenings[j] * fixedAssets[j].rate;
-        depreciation += dep;
-        wdvOpenings[j] -= dep;
-      }
-      writtenDownValue = wdvOpenings.reduce((sum, val) => sum + val, 0);
+    for (let j = 0; j < wdvOpenings.length; j++) {
+      const dep = wdvOpenings[j] * fixedAssets[j].rate;
+      depreciation += dep;
+      wdvOpenings[j] -= dep;
     }
+    const writtenDownValue = wdvOpenings.reduce((sum, val) => sum + val, 0);
 
     // Net profit & margins
     const netProfit = revenue - costOfProduction - inwardFreight - adminExpenses - depreciation;

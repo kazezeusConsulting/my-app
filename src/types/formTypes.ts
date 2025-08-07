@@ -79,12 +79,6 @@ export interface WorkingCapital {
   advanceFromCustomersPercent?: number;
 }
 
-export interface Depreciation {
-  method: 'WDV' | 'SLM';
-  assetLife: number;
-  depreciationRate: number;
-}
-
 export interface LedgerCashflow {
   openingBankBalance: number;
   openingInventory?: number;
@@ -154,5 +148,4 @@ export interface FormValues
     SalesRevenue,
     ExpenseAssumptions,
     WorkingCapital,
-    Depreciation,
     LedgerCashflow {}
