@@ -5,9 +5,9 @@ type Props = { formData: FormValues };
 
 export default function MeansOfFinanceReport({ formData }: Props) {
   // Ensure all values are numbers
-  const totalInternal = parseInt(formData.ownerCapital as any) || 0;
-  const totalTermLoan = parseInt(formData.termLoanAmount as any) || 0;
-  const totalWC = parseInt(formData.wcLoanAmount as any) || 0;
+  const totalInternal = Number(formData.ownerCapital) || 0;
+  const totalTermLoan = Number(formData.termLoanAmount) || 0;
+  const totalWC = Number(formData.wcLoanAmount) || 0;
   const grandTotal = totalInternal + totalTermLoan + totalWC;
 
   // Helper for ₹ formatting

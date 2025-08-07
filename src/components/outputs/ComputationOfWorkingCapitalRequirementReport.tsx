@@ -28,7 +28,11 @@ export default function ComputationOfWorkingCapitalRequirementReport({ formData,
     const stock = d.stockIncrease ?? 0;
     const debtors = d.debtorsIncrease ?? 0;
     const totalAssets = stock + debtors;
-    const margin = totalAssets * (formData.marginPercent / 100);
+    const wcrMarginItem = formData.costItems.find(
+      (item) => item.type === 'Working Capital Requirement'
+    );
+    const marginPct = wcrMarginItem ? Number(wcrMarginItem.marginPercent) : 0;
+    const margin = totalAssets * (marginPct / 100);
     const wcr = d.workingCapital;
     return { year: d.year, stock, debtors, totalAssets, margin, wcr };
   });
@@ -39,7 +43,7 @@ export default function ComputationOfWorkingCapitalRequirementReport({ formData,
     { label: 'Sundry Debtors', key: 'debtors' },
     { label: 'Total Assets', key: 'totalAssets' },
     {
-      label: `Less: Margin (${formData.marginPercent}%)`,
+      label: `Less: Margin (${formData.costItems.find((i) => i.type === 'Working Capital Requirement')?.marginPercent || 0}%)`,
       key: 'margin',
     },
     { label: 'Working Capital Requirement', key: 'wcr' },

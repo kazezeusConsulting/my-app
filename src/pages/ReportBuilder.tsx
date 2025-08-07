@@ -59,13 +59,13 @@ export default function ReportBuilder() {
       emiFrequency: 'Monthly',
 
       // Cost of Project
-      machineryEquipment: 0,
-      furnitureFixtures: 0,
-      otherFixedAssets: 0,
-      preOpExpenses: 0,
-      workingCapitalRequirement: 0,
-      marginPercent: 15,
-      contingencyPercent: 5,
+      costItems: [
+        { type: 'Machinery & Equipment', marginPercent: 0, amount: 0 },
+        { type: 'Furniture / Fixtures', marginPercent: 0, amount: 0 },
+        { type: 'Other Fixed Assets', marginPercent: 0, amount: 0 },
+        { type: 'Pre-operating Expenses', marginPercent: 0, amount: 0 },
+        { type: 'Working Capital Requirement', marginPercent: 15, amount: 0 },
+      ],
 
       // Funding / Loans
       ownerCapital: 0,

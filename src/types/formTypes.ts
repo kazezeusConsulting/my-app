@@ -23,13 +23,13 @@ export interface ProjectTimeline {
 }
 
 export interface CostOfProject {
-  machineryEquipment: number;
-  furnitureFixtures: number;
-  otherFixedAssets: number;
-  preOpExpenses: number;
-  workingCapitalRequirement: number;
+  costItems: CostItem[];
+}
+
+export interface CostItem {
+  type: string;
   marginPercent: number;
-  contingencyPercent: number;
+  amount: number;
 }
 
 export interface FundingLoans {
