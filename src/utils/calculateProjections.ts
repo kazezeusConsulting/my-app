@@ -11,17 +11,19 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const span                = Number(data.projectionSpan) || 0;
 
   const ownerCapital        = Number(data.ownerCapital) || 0;
-  const baseYearSales       = Number(data.baseYearSales) || 0;
   const annualGrowthRate    = (Number(data.annualGrowthRate) || 0) / 100;
   const priceInflation      = (Number(data.priceInflation) || 0) / 100;
-  const unitsSoldYear1      = Number(data.unitsSoldYear1) || 0;
-  const avgSellingPriceYear1= Number(data.avgSellingPriceYear1) || 0;
+  const baseRevenue         = (data.products || []).reduce(
+    (sum, p) => sum + Number(p.unitPrice || 0) * Number(p.quantity || 0),
+    0
+  );
 
   const rawMaterialMonthly   = Number(data.rawMaterialMonthly) || 0;
   const wagesLabourMonthly   = Number(data.wagesLabourMonthly) || 0;
   const electricityMonthly   = Number(data.electricityMonthly) || 0;
   const otherOverheadsMonthly= Number(data.otherOverheadsMonthly) || 0;
-  const sellingMonthly       = Number(data.sellingExpensesMonthly) || 0;
+  const outwardFreightMonthly = Number(data.outwardFreightMonthly) || 0;
+  const inwardFreightMonthly  = Number(data.inwardFreightMonthly) || 0;
   const adminMonthly         = Number(data.adminExpensesMonthly) || 0;
 
   const inventoryDays       = Number(data.inventoryDays) || 0;
@@ -34,7 +36,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
   const totalFixedAssets    = machineryEquipment + furnitureFixtures + otherFixedAssets;
 
   const method              = data.method;
-  const assetLife           = Number(data.assetLife) || 1;
+  const depRate             = (Number(data.depreciationRate) || 0) / 100;
 
   const termLoanAmount      = Number(data.termLoanAmount) || 0;
   const termLoanInterest    = (Number(data.termLoanInterest) || 0) / 100;
@@ -74,38 +76,39 @@ export default function calculateProjections(data: FormValues): Projection[] {
   for (let i = 0; i < span; i++) {
     const year = startYear + i;
 
-    // Revenue growth
-    const revenue = baseYearSales * Math.pow(1 + annualGrowthRate, i);
+    // Revenue growth based on products
+    const revenue =
+      baseRevenue *
+      Math.pow(1 + annualGrowthRate, i) *
+      Math.pow(1 + priceInflation, i);
 
     // Cost of Sales breakdown (annualized from monthly values)
     const purchase       = rawMaterialMonthly * 12;
     const labourAndWages = wagesLabourMonthly * 12;
     const electricityExp = electricityMonthly * 12;
     const otherOverheads = otherOverheadsMonthly * 12;
-    const costOfSales    = purchase + labourAndWages + electricityExp + otherOverheads;
+    const outwardFreight = outwardFreightMonthly * 12;
+    const costOfSales    =
+      purchase + labourAndWages + electricityExp + otherOverheads + outwardFreight;
 
-    const sellingExpenses = sellingMonthly * 12;
-    const adminExpenses   = adminMonthly * 12;
+    const inwardFreight  = inwardFreightMonthly * 12;
+    const adminExpenses  = adminMonthly * 12;
 
     // Opening/Closing stock
     const openingStock = i === 0 ? openingInventory : results[i - 1].closingStock ?? 0;
     const closingStock = (inventoryDays / 365) * revenue;
 
-    // Sales computation
-    const avgSalePrice = avgSellingPriceYear1 * Math.pow(1 + priceInflation, i);
-    const netSaleUnits = unitsSoldYear1 * Math.pow(1 + annualGrowthRate, i);
-    const grossSale    = netSaleUnits * avgSalePrice;
+    // Sales computation (simplified)
+    const grossSale    = revenue;
 
     // Depreciation
     let depreciation = 0;
-    let rateOfDepreciation = 0;
+    const rateOfDepreciation = depRate;
     let writtenDownValue = 0;
     if (method === 'SLM') {
-      rateOfDepreciation = 1 / assetLife;
       depreciation = totalFixedAssets * rateOfDepreciation;
       writtenDownValue = totalFixedAssets - depreciation * (i + 1);
     } else {
-      rateOfDepreciation = 2 / assetLife;
       depreciation = wdvOpening * rateOfDepreciation;
       writtenDownValue = wdvOpening - depreciation;
       wdvOpening = writtenDownValue;
@@ -113,7 +116,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
     // Net Profit & margin
     const netProfit   =
-      revenue - costOfSales - sellingExpenses - adminExpenses - depreciation;
+      revenue - costOfSales - inwardFreight - adminExpenses - depreciation;
     const profitMargin = revenue ? netProfit / revenue : 0;
 
     // Working Capital
@@ -203,14 +206,13 @@ export default function calculateProjections(data: FormValues): Projection[] {
       closingCashBalance,
       openingStock,
       closingStock,
-      netSale: netSaleUnits,
-      avgSalePrice,
       grossSale,
       purchase,
       electricityExpenses: electricityExp,
       labourAndWages,
       otherOverheads,
-      sellingExpenses,
+      outwardFreight,
+      inwardFreight,
       adminExpenses,
       costOfProduction: costOfSales,
       addition: fixedAssetAddition,
