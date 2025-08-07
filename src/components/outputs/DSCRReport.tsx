@@ -169,7 +169,7 @@ export default function DSCRReport({ formData, data }: Props) {
             </td>
             {totalRepayments.map((amt, i) => (
               <td
-                key={`rep-${data[i].year}`}
+                key={`rep-${schedule[i]?.year ?? i}`}
                 className="border border-gray-300 p-2 text-right"
               >
                 {fmtAmt(amt)}
