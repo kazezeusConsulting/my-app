@@ -14,6 +14,20 @@ export async function exportToPdf() {
     scale: 2,
     useCORS: true,
     scrollY: -window.scrollY,
+    // html2canvas does not yet understand modern OKLCH colors used by
+    // Tailwind v4. Convert computed styles to RGB in the cloned document
+    // so the canvas render succeeds.
+    onclone: (clonedDoc) => {
+      const elements = clonedDoc.querySelectorAll('*');
+      elements.forEach((el) => {
+        const style = clonedDoc.defaultView?.getComputedStyle(el as Element);
+        if (style) {
+          (el as HTMLElement).style.color = style.color;
+          (el as HTMLElement).style.backgroundColor = style.backgroundColor;
+          (el as HTMLElement).style.borderColor = style.borderColor;
+        }
+      });
+    },
   });
 
   // Convert canvas to an image

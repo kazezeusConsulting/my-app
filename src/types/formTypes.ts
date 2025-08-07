@@ -136,6 +136,12 @@ export interface Projection {
   outwardFreight?: number;
   inwardFreight?: number;
   adminExpenses?: number;
+  // newly added carry-forward balances
+  closingDebtors?: number;
+  subsidyOutstanding?: number;
+  termLoanOutstanding?: number;
+  cashCreditOutstanding?: number;
+  creditorsOutstanding?: number;
 
 }
 
