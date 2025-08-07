@@ -41,7 +41,7 @@ export default function FundingLoans({
 
   setValue(
     "termLoanAmount",
-    Math.max(totalCost - totalMargin - subsidyAmount, 0)
+    Math.max(totalCost - totalMargin - subsidyAmount - wcRequirement, 0)
   );
   setValue("wcLoanAmount", wcRequirement);
   setValue("capitalSubsidyAmount", subsidyAmount);
