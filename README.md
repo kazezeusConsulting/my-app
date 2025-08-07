@@ -1,69 +1,33 @@
-# React + TypeScript + Vite
+# My App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository includes a React + Vite frontend and an Express backend. Authentication is handled with [Clerk](https://clerk.com) and data is stored in PostgreSQL.
 
-Currently, two official plugins are available:
+The frontend shows a simple authentication portal and stores report inputs to the backend. The backend persists users, clients, projects, and reports.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup
 
-## Expanding the ESLint configuration
+1. Copy `.env.example` to `.env` and fill in your Clerk keys and database connection string.
+2. Install dependencies:
+   ```bash
+   npm install
+   npm --prefix server install
+   ```
+3. Run the development servers:
+   ```bash
+   npm run server   # starts the backend on the port in .env
+   npm run dev      # starts the frontend
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Deployment
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The project is ready to deploy on [Railway](https://railway.app). Provision a PostgreSQL database and set the environment variables from `.env` in your Railway project.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## Backend overview
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `server/src/index.ts` – Express app with Clerk auth, user route, and report-saving endpoint.
+- `server/src/db.ts` – PostgreSQL connection pool.
+- `server/schema.sql` – Schema for `users`, `clients`, `projects`, and `reports` tables.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Environment variables
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Refer to `.env.example` for the required variables.
