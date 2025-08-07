@@ -45,7 +45,7 @@ export default function ComputationOfDepreciationReport({ data }: Props) {
   return (
     <section className="mb-6">
       <h2 className="uppercase text-lg font-semibold mb-4">
-        13. Computation of Depreciation
+        11. Computation of Depreciation
       </h2>
 
       <table className="border-collapse border border-gray-300 w-full text-sm">

@@ -20,6 +20,7 @@ export default function FundingLoans({
   const { setValue } = useFormContext<FormValues>();
   const costItems = useWatch({ control, name: "costItems" }) as CostItem[];
   const capPct = useWatch({ control, name: "capitalSubsidyPercent" });
+  const ownerCap = useWatch({ control, name: "ownerCapital" });
 
   const totalCost =
     costItems?.reduce((sum: number, item: CostItem) => sum + Number(item.amount || 0), 0) || 0;
@@ -32,8 +33,10 @@ export default function FundingLoans({
   const wcRequirement =
     costItems?.find((i: CostItem) => i.type === "Working Capital Requirement")?.amount || 0;
 
-  setValue("ownerCapital", totalMargin);
-  setValue("termLoanAmount", totalCost - totalMargin);
+  setValue(
+    "termLoanAmount",
+    Math.max(totalCost - totalMargin - Number(ownerCap || 0), 0)
+  );
   setValue("wcLoanAmount", wcRequirement);
   setValue("capitalSubsidyAmount", (totalCost * Number(capPct || 0)) / 100);
   return (
@@ -46,7 +49,7 @@ export default function FundingLoans({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Owner Capital</FormLabel>
-              <FormControl><Input type="number" readOnly {...field} /></FormControl>
+              <FormControl><Input type="number" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
