@@ -1,5 +1,5 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { SignedIn, UserButton } from '@clerk/clerk-react';
 import type { ReactNode } from 'react';
 import ReportBuilder from '@/pages/ReportBuilder';
@@ -8,8 +8,9 @@ import { useAuth } from '@clerk/clerk-react';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { isSignedIn } = useAuth();
+  const location = useLocation();
   if (!isSignedIn) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
   return <>{children}</>;
 }
