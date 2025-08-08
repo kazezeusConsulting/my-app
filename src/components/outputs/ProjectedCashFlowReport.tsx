@@ -21,38 +21,29 @@ export default function ProjectedCashFlowReport({ formData, data }: Props) {
   };
   const sourceRows: SourceRow[] = [
     {
-      label: 'Capital Account',
-      // cumulative equity = ownerCapital (year 0) + sum(netProfit − drawings)
-      getValue: (d, idx) =>
-        (d.reserveAndSurplus || 0) + (idx === 0 ? Number(formData.ownerCapital) : 0),
+      label: 'Capital',
+      getValue: (_d, idx) => (idx === 0 ? Number(formData.ownerCapital) : 0),
+    },
+    { label: 'Reserve & Surplus', getValue: (d) => d.reserveAndSurplus || 0 },
+    {
+      label: 'Depreciation & Exp. W/off',
+      getValue: (d) => d.depreciationAndExpOff || 0,
     },
     {
-      label: 'Add: Addition',
-      getValue: (d) => d.fixedAssetAddition || 0,
+      label: 'Increase in Cash Credit',
+      getValue: (d) => d.cashCreditIncrease || 0,
     },
     {
-      label: 'Add: Net Profit',
-      getValue: (d) => d.netProfit || 0,
+      label: 'Increase in Term Loan (New)',
+      getValue: (d) => d.termLoanIncrease || 0,
     },
     {
-      label: 'Less: Drawings',
-      getValue: (d) => d.drawings || 0,
+      label: 'Increase in Subsidy',
+      getValue: (d) => d.subsidyIncrease || 0,
     },
     {
-      label: 'Capital Subsidy',
-      getValue: (d) => d.subsidyOutstanding || 0,
-    },
-    {
-      label: 'Term Loan',
-      getValue: (d) => d.termLoanOutstanding || 0,
-    },
-    {
-      label: 'Cash Credit',
-      getValue: (d) => d.cashCreditOutstanding || 0,
-    },
-    {
-      label: 'Sundry Creditors',
-      getValue: (d) => d.creditorsOutstanding || 0,
+      label: 'Increase in Creditors',
+      getValue: (d) => d.creditorsIncrease || 0,
     },
   ];
 
@@ -62,13 +53,20 @@ export default function ProjectedCashFlowReport({ formData, data }: Props) {
     getValue: (d: Projection) => number;
   };
   const appRows: AppRow[] = [
-    { label: 'Fixed Assets', getValue: (d) => d.fixedAssetAddition || 0 },
-    { label: 'Less: Depreciation', getValue: (d) => d.depreciation || 0 },
-    { label: 'Net Fixed Assets', getValue: (d) => d.writtenDownValue || 0 },
-    { label: 'Current Assets: Debtors', getValue: (d) => d.closingDebtors || 0 },
-    { label: 'Current Assets: Stock in Hand', getValue: (d) => d.closingStock || 0 },
-    { label: 'Current Assets: Cash & Bank', getValue: (d) => d.closingCashBalance || 0 },
-    { label: 'Current Assets: Subsidy (FD)', getValue: (d) => d.subsidyOutstanding || 0 },
+    {
+      label: 'Increase in Fixed Assets',
+      getValue: (d) => d.fixedAssetAddition || 0,
+    },
+    { label: 'Increase in Stock', getValue: (d) => d.stockIncrease || 0 },
+    {
+      label: 'Repayment of Term Loan (New)',
+      getValue: (d) => d.loanRepayment || 0,
+    },
+    {
+      label: 'Increase in Subsidy (FD)',
+      getValue: (d) => d.subsidyFd || 0,
+    },
+    { label: 'Drawings', getValue: (d) => d.drawings || 0 },
   ];
 
   // build matrix of values
@@ -181,6 +179,47 @@ export default function ProjectedCashFlowReport({ formData, data }: Props) {
             <td className="border border-gray-300 p-2 text-right">
               {fmt(appGrand)}
             </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Closing Cash Summary */}
+      <h3 className="uppercase text-sm font-semibold mt-4 mb-2">Cash & Bank Balance</h3>
+      <table className="w-full border-collapse border border-gray-300 text-sm mt-2">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border border-gray-300 p-2 text-left">Particulars</th>
+            {data.map((d, i) => (
+              <th key={i} className="border border-gray-300 p-2 text-center">
+                {d.year}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="border border-gray-300 p-2">Opening Cash &amp; Bank Balance</td>
+            {data.map((d, i) => (
+              <td key={i} className="border border-gray-300 p-2 text-right">
+                {fmt(d.openingCashBalance || 0)}
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td className="border border-gray-300 p-2">Add : Surplus</td>
+            {data.map((d, i) => (
+              <td key={i} className="border border-gray-300 p-2 text-right">
+                {fmt(d.surplus || 0)}
+              </td>
+            ))}
+          </tr>
+          <tr className="font-semibold bg-gray-50">
+            <td className="border border-gray-300 p-2">Closing Cash &amp; Bank Balance</td>
+            {data.map((d, i) => (
+              <td key={i} className="border border-gray-300 p-2 text-right">
+                {fmt(d.closingCashBalance || 0)}
+              </td>
+            ))}
           </tr>
         </tbody>
       </table>
