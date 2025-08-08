@@ -26,6 +26,44 @@ app.get('/api/user', requireAuth(), async (req, res) => {
   }
 });
 
+app.get('/api/clients', requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, name FROM clients WHERE user_id = (
+         SELECT id FROM users WHERE clerk_id = $1
+       ) ORDER BY name`,
+      [userId]
+    );
+    res.json({ clients: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch clients' });
+  }
+});
+
+app.get('/api/reports', requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  try {
+    const { rows } = await pool.query(
+      `SELECT reports.id, reports.data, reports.created_at,
+              projects.name AS project_name,
+              clients.name AS client_name
+       FROM reports
+       JOIN projects ON reports.project_id = projects.id
+       JOIN clients ON projects.client_id = clients.id
+       JOIN users ON projects.user_id = users.id
+       WHERE users.clerk_id = $1
+       ORDER BY reports.created_at DESC`,
+      [userId]
+    );
+    res.json({ reports: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch reports' });
+  }
+});
+
 app.post('/api/reports', requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   const { clientName, projectName, data, userEmail } = req.body;
@@ -43,14 +81,14 @@ app.post('/api/reports', requireAuth(), async (req, res) => {
     const {
       rows: [clientRow],
     } = await pool.query(
-      'INSERT INTO clients (user_id, name) VALUES ($1, $2) RETURNING id',
+      'INSERT INTO clients (user_id, name) VALUES ($1, $2) ON CONFLICT (user_id, name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
       [userRow.id, clientName]
     );
 
     const {
       rows: [projectRow],
     } = await pool.query(
-      'INSERT INTO projects (user_id, client_id, name) VALUES ($1, $2, $3) RETURNING id',
+      'INSERT INTO projects (user_id, client_id, name) VALUES ($1, $2, $3) ON CONFLICT (user_id, client_id, name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
       [userRow.id, clientRow.id, projectName]
     );
 
