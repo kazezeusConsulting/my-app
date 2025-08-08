@@ -27,7 +27,7 @@ export default function App() {
         </SignedIn>
         <main className="py-6 px-4">
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login/*" element={<Login />} />
             <Route
               path="/"
               element={
