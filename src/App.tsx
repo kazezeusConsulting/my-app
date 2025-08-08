@@ -1,32 +1,43 @@
 // src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SignedIn, UserButton } from '@clerk/clerk-react';
+import type { ReactNode } from 'react';
 import ReportBuilder from '@/pages/ReportBuilder';
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from '@clerk/clerk-react';
+import Login from '@/pages/Login';
+import { useAuth } from '@clerk/clerk-react';
+
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { isSignedIn } = useAuth();
+  if (!isSignedIn) {
+    return <Navigate to="/login" />;
+  }
+  return <>{children}</>;
+}
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-white shadow p-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Projection Report Generator</h1>
-        <SignedOut>
-          <SignInButton />
-        </SignedOut>
+    <BrowserRouter>
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         <SignedIn>
-          <UserButton />
+          <header className="bg-white shadow p-4 flex items-center justify-between">
+            <h1 className="text-2xl font-semibold">Projection Report Generator</h1>
+            <UserButton />
+          </header>
         </SignedIn>
-      </header>
-      <main className="py-6 px-4">
-        <SignedIn>
-          <ReportBuilder />
-        </SignedIn>
-        <SignedOut>
-          <p>Please sign in to build reports.</p>
-        </SignedOut>
-      </main>
-    </div>
+        <main className="py-6 px-4">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <RequireAuth>
+                  <ReportBuilder />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
