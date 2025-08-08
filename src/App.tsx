@@ -7,11 +7,17 @@ import Login from '@/pages/Login';
 import { useAuth } from '@clerk/clerk-react';
 
 function RequireAuth({ children }: { children: ReactNode }) {
-  const { isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   const location = useLocation();
+
+  if (!isLoaded) {
+    return null;
+  }
+
   if (!isSignedIn) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
+
   return <>{children}</>;
 }
 
