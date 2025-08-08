@@ -62,6 +62,7 @@ export default function calculateProjections(data: FormValues): Projection[] {
 
   const openingBankBalance = Number(data.openingBankBalance) || 0;
   const openingInventory = Number(data.openingInventory) || 0;
+  const openingCreditors = Number(data.openingCreditors) || 0;
 
   // 2. Build term–loan amortization schedule
   const schedule: { opening: number; interest: number; principal: number; closing: number }[] = [];
@@ -77,8 +78,9 @@ export default function calculateProjections(data: FormValues): Projection[] {
   }
 
   // 3. Initialize carry-forward variables
-  let prevReserve = 0;
+  let cumulativeReserve = 0;
   let prevClosingCash = openingBankBalance;
+  let prevCreditors = openingCreditors;
   const wdvOpenings = fixedAssets.map((f) => f.amount);
   const cashCreditOutstanding = wcLoanAmount;
   const subsidyOutstanding = capSubToggle
@@ -110,6 +112,9 @@ export default function calculateProjections(data: FormValues): Projection[] {
     const closingStock = (inventoryDays / 365) * revenue;
     const closingDebtors = (debtorDays / 365) * revenue;
     const creditorsOutstanding = (creditorDays / 365) * revenue;
+    const stockIncrease = closingStock - openingStock;
+    const creditorsIncrease = creditorsOutstanding - prevCreditors;
+    prevCreditors = creditorsOutstanding;
 
     // Depreciation & WDV
     let depreciation = 0;
@@ -130,8 +135,8 @@ export default function calculateProjections(data: FormValues): Projection[] {
     // added to the next year, not the same year. Similarly, drawings
     // reduce next year's opening balance. For the very first year we
     // start from base capital, so reserveAndSurplus begins at 0.
-    const reserveAndSurplus = prevReserve;
-    prevReserve += surplus - annualDrawings;
+    const reserveAndSurplus = i === 0 ? 0 : results[i - 1].netProfit - annualDrawings;
+    cumulativeReserve += reserveAndSurplus;
 
     // Financing moves
     const subsidyIncrease = i === 0 && capSubToggle ? subsidyOutstanding : 0;
@@ -143,9 +148,9 @@ export default function calculateProjections(data: FormValues): Projection[] {
     // Cash flow
     const equityInjection = i === 0 ? ownerCapital : 0;
     const sourcesTotal =
-      equityInjection + netProfit + subsidyIncrease + termLoanIncrease + cashCreditIncrease + creditorsOutstanding;
+      equityInjection + reserveAndSurplus + depreciation + cashCreditIncrease + termLoanIncrease + subsidyIncrease + creditorsIncrease;
     const applicationTotal =
-      (i === 0 ? totalFixedAssets : 0) + (openingStock - closingStock) + depreciation + schedule[i].principal + subsidyIncrease + annualDrawings;
+      (i === 0 ? totalFixedAssets : 0) + stockIncrease + schedule[i].principal + subsidyIncrease + annualDrawings;
     const closingCashBalance = prevClosingCash + sourcesTotal - applicationTotal;
     prevClosingCash = closingCashBalance;
 
@@ -156,8 +161,8 @@ export default function calculateProjections(data: FormValues): Projection[] {
     const currentRatio = creditorsOutstanding
       ? (closingDebtors + closingStock + closingCashBalance + subsidyOutstanding) / creditorsOutstanding
       : 0;
-    const tolToTnw = ownerCapital + reserveAndSurplus
-      ? (termLoanOutstanding + cashCreditOutstanding) / (ownerCapital + reserveAndSurplus)
+    const tolToTnw = ownerCapital + cumulativeReserve
+      ? (termLoanOutstanding + cashCreditOutstanding) / (ownerCapital + cumulativeReserve)
       : 0;
 
     // Push projection
@@ -183,7 +188,10 @@ export default function calculateProjections(data: FormValues): Projection[] {
       cashCreditIncrease,
       subsidyOutstanding,
       subsidyIncrease,
+      subsidyFd: subsidyIncrease,
       creditorsOutstanding,
+      creditorsIncrease,
+      stockIncrease,
       closingStock,
       closingDebtors,
       closingCashBalance,
@@ -200,6 +208,8 @@ export default function calculateProjections(data: FormValues): Projection[] {
       drawings: annualDrawings,
       costOfProduction,
       rateOfDepreciation: avgDepRate,
+      depreciationAndExpOff: depreciation,
+      loanRepayment: schedule[i].principal,
     });
   }
 
