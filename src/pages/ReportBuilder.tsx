@@ -34,6 +34,8 @@ import { exportToPdf } from '@/components/PdfExporter';
 export default function ReportBuilder() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [results, setResults] = useState<Projection[]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showReport, setShowReport] = useState(false);
   const { getToken } = useAuth();
   const { user } = useUser();
 
@@ -113,15 +115,36 @@ export default function ReportBuilder() {
     },
   });
 
+  const sections = [
+    <BusinessDetails control={form.control} />, // 0
+    <ProjectTimeline control={form.control} />, // 1
+    <CostOfProject control={form.control} />, // 2
+    <FundingLoans control={form.control} />, // 3
+    <SalesRevenue control={form.control} />, // 4
+    <ExpenseAssumptions control={form.control} />, // 5
+    <WorkingCapital control={form.control} />, // 6
+    <LedgerCashflow control={form.control} />, // 7
+  ];
+
+  const handleNext = () => setCurrentStep((s) => Math.min(s + 1, sections.length - 1));
+  const handleBack = () => setCurrentStep((s) => Math.max(s - 1, 0));
+  const handleNewReport = () => {
+    form.reset();
+    setFormData(null);
+    setResults([]);
+    setCurrentStep(0);
+    setShowReport(false);
+  };
+
   const onSubmit = async (data: FormValues) => {
     setFormData(data);
     const raw = calculateProjections(data);
-    // Guard against NaN years
     const projections = raw.map((p, i) => ({
       ...p,
       year: Number.isFinite(p.year) ? p.year : i + 1,
     }));
     setResults(projections);
+    setShowReport(true);
 
     try {
       const token = await getToken();
@@ -143,30 +166,24 @@ export default function ReportBuilder() {
     }
   };
 
-  return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <BusinessDetails control={form.control} />
-          <ProjectTimeline control={form.control} />
-          <CostOfProject control={form.control} />
-          <FundingLoans control={form.control} />
-          <SalesRevenue control={form.control} />
-          <ExpenseAssumptions control={form.control} />
-          <WorkingCapital control={form.control} />
-          <LedgerCashflow control={form.control} />
-
+  if (showReport && formData && results.length > 0) {
+    return (
+      <div className="max-w-5xl mx-auto py-8 px-4">
+        <div className="mb-6 flex gap-2">
           <button
-            type="submit"
+            onClick={() => setShowReport(false)}
+            className="bg-gray-200 px-4 py-2 rounded"
+          >
+            Go Back
+          </button>
+          <button
+            onClick={handleNewReport}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            Generate Report
+            New Report
           </button>
-        </form>
-      </Form>
-
-      {formData && results.length > 0 && (
-        <div id="report" className="mt-8 bg-white p-6 rounded shadow space-y-6">
+        </div>
+        <div id="report" className="bg-white p-6 rounded shadow space-y-6">
           <CoverReport formData={formData} />
           <div className="page-break" />
 
@@ -213,7 +230,46 @@ export default function ReportBuilder() {
             Download PDF
           </button>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto py-8 px-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {sections[currentStep]}
+
+          <div className="flex justify-between mt-4">
+            {currentStep > 0 && (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="bg-gray-200 px-4 py-2 rounded"
+              >
+                Back
+              </button>
+            )}
+
+            {currentStep < sections.length - 1 ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              >
+                Next
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              >
+                Generate Report
+              </button>
+            )}
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }
