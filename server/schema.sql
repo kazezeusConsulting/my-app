@@ -7,14 +7,16 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS clients (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL
+  name TEXT NOT NULL,
+  UNIQUE (user_id, name)
 );
 
 CREATE TABLE IF NOT EXISTS projects (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
-  name TEXT NOT NULL
+  name TEXT NOT NULL,
+  UNIQUE (user_id, client_id, name)
 );
 
 CREATE TABLE IF NOT EXISTS reports (
