@@ -1,10 +1,11 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { SignedIn, UserButton } from '@clerk/clerk-react';
 import type { ReactNode } from 'react';
 import ReportBuilder from '@/pages/ReportBuilder';
 import Login from '@/pages/Login';
 import { useAuth } from '@clerk/clerk-react';
+import AppShell from '@/components/layout/AppShell';
+import { ToasterProvider } from '@/components/feedback/Toaster';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
@@ -24,27 +25,23 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-slate-50 text-slate-900">
-        <SignedIn>
-          <header className="bg-white shadow p-4 flex items-center justify-between">
-            <h1 className="text-2xl font-semibold">Projection Report Generator</h1>
-            <UserButton />
-          </header>
-        </SignedIn>
-        <main className="py-6 px-4">
-          <Routes>
-            <Route path="/login/*" element={<Login />} />
-            <Route
-              path="/"
-              element={
-                <RequireAuth>
-                  <ReportBuilder />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </main>
-      </div>
+      <ToasterProvider>
+        <Routes>
+          <Route path="/login/*" element={<Login />} />
+          <Route
+            path="/*"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <Routes>
+                    <Route index element={<ReportBuilder />} />
+                  </Routes>
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+        </Routes>
+      </ToasterProvider>
     </BrowserRouter>
   );
 }

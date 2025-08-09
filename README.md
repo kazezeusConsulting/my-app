@@ -31,3 +31,14 @@ The project is ready to deploy on [Railway](https://railway.app). Provision a Po
 ## Environment variables
 
 Refer to `.env.example` for the required variables.
+
+## UI/UX Overhaul – How to extend the design system
+
+The frontend now uses a small set of composable components to keep the UI consistent:
+
+- `AppShell` provides the responsive header, sidebar navigation and theme toggle.
+- `ReportCard` and `KPI` give reports and metrics a unified card style.
+- `Field` wraps shadcn form controls with labels, hints and validation.
+- Utility formatters in `utils/format.ts` normalize currency and percentage displays.
+
+When adding new screens or reports, compose these pieces rather than building bespoke markup. Use Tailwind utility classes and the provided theme tokens so light and dark modes remain in sync.
