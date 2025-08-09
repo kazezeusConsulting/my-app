@@ -5,7 +5,7 @@ export default function Home() {
   const { isSignedIn } = useAuth();
 
   if (isSignedIn) {
-    return <Navigate to="/report" />;
+    return <Navigate to="/app/report" />;
   }
 
   return (

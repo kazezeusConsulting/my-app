@@ -2,6 +2,9 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import ReportBuilder from '@/pages/ReportBuilder';
+import Clients from '@/pages/Clients';
+import SavedReports from '@/pages/SavedReports';
+import SavedReport from '@/pages/SavedReport';
 import Login from '@/pages/Login';
 import Home from '@/pages/Home';
 import { useAuth } from '@clerk/clerk-react';
@@ -31,12 +34,16 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/login/*" element={<Login />} />
           <Route
-            path="/report/*"
+            path="/app/*"
             element={
               <RequireAuth>
                 <AppShell>
                   <Routes>
-                    <Route index element={<ReportBuilder />} />
+                    <Route index element={<Navigate to="report" replace />} />
+                    <Route path="report" element={<ReportBuilder />} />
+                    <Route path="clients" element={<Clients />} />
+                    <Route path="saved-reports" element={<SavedReports />} />
+                    <Route path="saved-reports/:id" element={<SavedReport />} />
                   </Routes>
                 </AppShell>
               </RequireAuth>

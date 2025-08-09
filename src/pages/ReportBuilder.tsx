@@ -1,11 +1,10 @@
 // src/pages/ReportBuilder.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { Form } from '@/components/ui/form';
 import type { FormValues, Projection } from '@/types/formTypes';
 import calculateProjections from '@/utils/calculateProjections';
-import { formatCurrency, formatNumber } from '@/utils/format';
 
 import BusinessDetails from '@/components/form-sections/BusinessDetails';
 import ProjectTimeline from '@/components/form-sections/ProjectTimeline';
@@ -16,25 +15,7 @@ import ExpenseAssumptions from '@/components/form-sections/ExpenseAssumptions';
 import WorkingCapital from '@/components/form-sections/WorkingCapital';
 import LedgerCashflow from '@/components/form-sections/LedgerCashflow';
 
-import CoverReport from '@/components/outputs/CoverReport';
-import CostOfProjectReport from '@/components/outputs/CostOfProjectReport';
-import MeansOfFinanceReport from '@/components/outputs/MeansOfFinanceReport';
-import CapitalSubsidyReport from '@/components/outputs/CapitalSubsidyReport';
-import ProjectedCashFlowReport from '@/components/outputs/ProjectedCashFlowReport';
-import KeyRatiosReport from '@/components/outputs/KeyRatiosReport';
-import ProjectedBalanceSheetReport from '@/components/outputs/ProjectedBalanceSheetReport';
-import ProjectedProfitabilityReport from '@/components/outputs/ProjectedProfitabilityReport';
-import ComputationOfProductionReport from '@/components/outputs/ComputationOfProductionReport';
-import ComputationOfWorkingCapitalRequirementReport from '@/components/outputs/ComputationOfWorkingCapitalRequirementReport';
-import ComputationOfDepreciationReport from '@/components/outputs/ComputationOfDepreciationReport';
-import RepaymentScheduleReport from '@/components/outputs/RepaymentScheduleReport';
-import DSCRReport from '@/components/outputs/DSCRReport';
-
-import ReportCard from '@/components/common/ReportCard';
-import KPI from '@/components/common/KPI';
-import SectionHeader from '@/components/common/SectionHeader';
-
-import { exportToPdf } from '@/components/PdfExporter';
+import ReportOutput from '@/components/ReportOutput';
 import { useToast } from '@/components/feedback/Toaster';
 
 export default function ReportBuilder() {
@@ -42,9 +23,25 @@ export default function ReportBuilder() {
   const [results, setResults] = useState<Projection[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showReport, setShowReport] = useState(false);
+  const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
   const { getToken } = useAuth();
   const { user } = useUser();
   const { notify } = useToast();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch('/api/clients', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setClients(data.clients);
+      } catch (err) {
+        console.error('Failed to load clients', err);
+      }
+    })();
+  }, [getToken]);
 
   const defaultSpan = 5;
   const form = useForm<FormValues>({
@@ -52,7 +49,7 @@ export default function ReportBuilder() {
       // Business Details
       businessName: '',
       constitutionType: '',
-      ownerName: '',
+      clientName: '',
       mobile: '',
       email: '',
       address: '',
@@ -123,7 +120,7 @@ export default function ReportBuilder() {
   });
 
   const sections = [
-    <BusinessDetails control={form.control} />, // 0
+    <BusinessDetails control={form.control} clients={clients} />, // 0
     <ProjectTimeline control={form.control} />, // 1
     <CostOfProject control={form.control} />, // 2
     <FundingLoans control={form.control} />, // 3
@@ -153,7 +150,10 @@ export default function ReportBuilder() {
     setResults(projections);
     setShowReport(true);
     notify('Projections generated');
+  };
 
+  const handleSaveReport = async () => {
+    if (!formData) return;
     try {
       const token = await getToken();
       await fetch('/api/reports', {
@@ -163,14 +163,16 @@ export default function ReportBuilder() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          clientName: data.ownerName,
-          projectName: data.businessName,
-          data,
+          clientName: formData.clientName,
+          projectName: formData.businessName,
+          data: formData,
           userEmail: user?.primaryEmailAddress?.emailAddress,
         }),
       });
+      notify('Report saved');
     } catch (err) {
       console.error('Failed to save report', err);
+      notify('Failed to save report');
     }
   };
 
@@ -190,83 +192,14 @@ export default function ReportBuilder() {
           >
             New Report
           </button>
-        </div>
-        <div id="report" className="space-y-6">
-          <SectionHeader title="Report Preview" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {(() => {
-              const first = results[0];
-              const kpis = [
-                { label: 'Revenue', value: formatCurrency(first.revenue) },
-                { label: 'Net Profit', value: formatCurrency(first.netProfit) },
-                { label: 'DSCR', value: formatNumber(first.dscr) },
-                { label: 'Current Ratio', value: formatNumber(first.currentRatio) },
-              ];
-              return kpis.map((k) => (
-                <KPI key={k.label} label={k.label} value={k.value} />
-              ));
-            })()}
-          </div>
-
-          <ReportCard title="Cover" description="Basic project details">
-            <CoverReport formData={formData} />
-          </ReportCard>
-
-          <ReportCard title="Cost of Project" description="Breakdown of project costs">
-            <CostOfProjectReport formData={formData} />
-          </ReportCard>
-
-          <ReportCard title="Means of Finance" description="Funding structure">
-            <MeansOfFinanceReport formData={formData} />
-            <CapitalSubsidyReport formData={formData} />
-          </ReportCard>
-
-          <ReportCard title="Projected Cash Flow" description="Yearly cash flow projections">
-            <ProjectedCashFlowReport formData={formData} data={results} />
-          </ReportCard>
-
-          <ReportCard title="Key Ratios" description="Financial ratios summary">
-            <KeyRatiosReport data={results} />
-          </ReportCard>
-
-          <ReportCard title="Balance Sheet" description="Projected balance sheet">
-            <ProjectedBalanceSheetReport formData={formData} data={results} />
-          </ReportCard>
-
-          <ReportCard title="Profitability" description="Projected profit and loss">
-            <ProjectedProfitabilityReport data={results} />
-          </ReportCard>
-
-          <ReportCard title="Production" description="Computation of production">
-            <ComputationOfProductionReport formData={formData} data={results} />
-          </ReportCard>
-
-          <ReportCard title="Working Capital Requirement" description="Computation of working capital requirement">
-            <ComputationOfWorkingCapitalRequirementReport
-              formData={formData}
-              data={results}
-            />
-          </ReportCard>
-
-          <ReportCard title="Depreciation" description="Computation of depreciation">
-            <ComputationOfDepreciationReport data={results} />
-          </ReportCard>
-
-          <ReportCard title="Repayment Schedule" description="Loan repayment schedule">
-            <RepaymentScheduleReport formData={formData} data={results} />
-          </ReportCard>
-
-          <ReportCard title="DSCR" description="Debt service coverage ratio">
-            <DSCRReport formData={formData} data={results} />
-          </ReportCard>
-
           <button
-            onClick={exportToPdf}
-            className="mt-6 inline-block border border-blue-600 text-blue-600 px-4 py-2 rounded hover:bg-blue-600 hover:text-white"
+            onClick={handleSaveReport}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
           >
-            Download PDF
+            Save Report
           </button>
         </div>
+        <ReportOutput formData={formData} results={results} />
       </div>
     );
   }

@@ -4,12 +4,42 @@ import { Field } from "@/components/forms/Field";
 import type { Control } from "react-hook-form";
 import type { FormValues } from "@/types/formTypes";
 
-export default function BusinessDetails({ control }: { control: Control<FormValues> }) {
+interface BusinessDetailsProps {
+  control: Control<FormValues>;
+  clients: { id: number; name: string }[];
+}
+
+export default function BusinessDetails({ control, clients }: BusinessDetailsProps) {
   return (
     <section className="rounded-lg border border-slate-300 bg-white/80 p-6 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/60">
       <h2 className="text-lg font-semibold mb-4 text-slate-700">1️⃣ Business Details</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Field control={control} name="businessName" label="Business Name">
+        <FormField
+          control={control}
+          name="clientName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Client</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients.map((c) => (
+                      <SelectItem key={c.id} value={c.name}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Field control={control} name="businessName" label="Project Name">
           {(field) => <Input {...field} />}
         </Field>
 
@@ -36,10 +66,6 @@ export default function BusinessDetails({ control }: { control: Control<FormValu
             </FormItem>
           )}
         />
-
-        <Field control={control} name="ownerName" label="Owner Name">
-          {(field) => <Input {...field} />}
-        </Field>
 
         <FormField
           control={control}
