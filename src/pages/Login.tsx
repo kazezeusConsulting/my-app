@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 
 export default function Login() {
   const location = useLocation();
-  const from = (location.state as { from?: string })?.from || '/';
+  const from = (location.state as { from?: string })?.from || '/report';
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-50">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50">
       <SignIn path="/login" routing="path" afterSignInUrl={from} />
     </div>
   );

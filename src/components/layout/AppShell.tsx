@@ -11,37 +11,35 @@ interface AppShellProps {
 
 export default function AppShell({ children, toolbar }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="flex items-center justify-between border-b bg-card px-4 py-2">
-        <h1 className="text-xl font-semibold">Projection Builder</h1>
-        <div className="flex items-center gap-2">
-          {toolbar}
-          <ThemeToggle />
-          <SignedIn>
-            <UserButton afterSignOutUrl="/login" />
-          </SignedIn>
-        </div>
-      </header>
-      <div className="grid md:grid-cols-[200px,1fr] lg:grid-cols-[240px,1fr] min-h-[calc(100vh-3rem)]">
-        <nav className="hidden md:block border-r p-4">
+    <div className="flex min-h-screen bg-gradient-to-b from-white to-gray-100 text-foreground">
+      <nav className="flex w-56 flex-col justify-between bg-gradient-to-b from-black to-blue-900 p-4 text-white">
+        <div>
+          <h1 className="mb-6 text-lg font-semibold">Project Report</h1>
           <ul className="space-y-2 text-sm">
             <li>
               <NavLink
-                to="/"
+                to="/report"
                 className={({ isActive }) =>
                   cn(
-                    'block rounded-md px-3 py-2 hover:bg-muted',
-                    isActive && 'bg-muted'
+                    'block rounded-md px-3 py-2 hover:bg-blue-800',
+                    isActive && 'bg-blue-800'
                   )
                 }
               >
-                Report Builder
+                Project Report
               </NavLink>
             </li>
           </ul>
-        </nav>
-        <main className="p-4">{children}</main>
-      </div>
+        </div>
+        <div className="flex items-center justify-between gap-2 pt-4">
+          {toolbar}
+          <ThemeToggle />
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+        </div>
+      </nav>
+      <main className="flex-1 p-4">{children}</main>
     </div>
   );
 }

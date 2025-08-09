@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import type { ReactNode } from 'react';
 import ReportBuilder from '@/pages/ReportBuilder';
 import Login from '@/pages/Login';
+import Home from '@/pages/Home';
 import { useAuth } from '@clerk/clerk-react';
 import AppShell from '@/components/layout/AppShell';
 import { ToasterProvider } from '@/components/feedback/Toaster';
@@ -27,9 +28,10 @@ export default function App() {
     <BrowserRouter>
       <ToasterProvider>
         <Routes>
+          <Route index element={<Home />} />
           <Route path="/login/*" element={<Login />} />
           <Route
-            path="/*"
+            path="/report/*"
             element={
               <RequireAuth>
                 <AppShell>
@@ -40,6 +42,7 @@ export default function App() {
               </RequireAuth>
             }
           />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ToasterProvider>
     </BrowserRouter>
