@@ -20,7 +20,7 @@ export default function ReportCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl border bg-card text-card-foreground shadow-sm p-6"
+      className="rounded-2xl border bg-card p-6 text-card-foreground shadow-lg backdrop-blur-sm"
     >
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>

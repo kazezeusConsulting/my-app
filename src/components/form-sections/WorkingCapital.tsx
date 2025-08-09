@@ -6,7 +6,7 @@ import type { FormValues } from "@/types/formTypes";
 
 export default function WorkingCapital({ control }: { control: Control<FormValues> }) {
   return (
-    <section className="border border-slate-200 rounded-md p-6 shadow-sm">
+    <section className="rounded-lg border border-slate-300 bg-white/80 p-6 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/60">
       <h2 className="text-lg font-semibold mb-4 text-slate-700">7️⃣ Working Capital</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
