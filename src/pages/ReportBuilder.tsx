@@ -5,6 +5,7 @@ import { useAuth, useUser } from '@clerk/clerk-react';
 import { Form } from '@/components/ui/form';
 import type { FormValues, Projection } from '@/types/formTypes';
 import calculateProjections from '@/utils/calculateProjections';
+import { formatCurrency, formatNumber } from '@/utils/format';
 
 import BusinessDetails from '@/components/form-sections/BusinessDetails';
 import ProjectTimeline from '@/components/form-sections/ProjectTimeline';
@@ -29,7 +30,12 @@ import ComputationOfDepreciationReport from '@/components/outputs/ComputationOfD
 import RepaymentScheduleReport from '@/components/outputs/RepaymentScheduleReport';
 import DSCRReport from '@/components/outputs/DSCRReport';
 
+import ReportCard from '@/components/common/ReportCard';
+import KPI from '@/components/common/KPI';
+import SectionHeader from '@/components/common/SectionHeader';
+
 import { exportToPdf } from '@/components/PdfExporter';
+import { useToast } from '@/components/feedback/Toaster';
 
 export default function ReportBuilder() {
   const [formData, setFormData] = useState<FormValues | null>(null);
@@ -38,6 +44,7 @@ export default function ReportBuilder() {
   const [showReport, setShowReport] = useState(false);
   const { getToken } = useAuth();
   const { user } = useUser();
+  const { notify } = useToast();
 
   const defaultSpan = 5;
   const form = useForm<FormValues>({
@@ -145,6 +152,7 @@ export default function ReportBuilder() {
     }));
     setResults(projections);
     setShowReport(true);
+    notify('Projections generated');
 
     try {
       const token = await getToken();
@@ -183,45 +191,74 @@ export default function ReportBuilder() {
             New Report
           </button>
         </div>
-        <div id="report" className="bg-white p-6 rounded shadow space-y-6">
-          <CoverReport formData={formData} />
-          <div className="page-break" />
+        <div id="report" className="space-y-6">
+          <SectionHeader title="Report Preview" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {(() => {
+              const first = results[0];
+              const kpis = [
+                { label: 'Revenue', value: formatCurrency(first.revenue) },
+                { label: 'Net Profit', value: formatCurrency(first.netProfit) },
+                { label: 'DSCR', value: formatNumber(first.dscr) },
+                { label: 'Current Ratio', value: formatNumber(first.currentRatio) },
+              ];
+              return kpis.map((k) => (
+                <KPI key={k.label} label={k.label} value={k.value} />
+              ));
+            })()}
+          </div>
 
-          <CostOfProjectReport formData={formData} />
-          <div className="page-break" />
+          <ReportCard title="Cover" description="Basic project details">
+            <CoverReport formData={formData} />
+          </ReportCard>
 
-          <MeansOfFinanceReport formData={formData} />
-          <CapitalSubsidyReport formData={formData} />
-          <div className="page-break" />
+          <ReportCard title="Cost of Project" description="Breakdown of project costs">
+            <CostOfProjectReport formData={formData} />
+          </ReportCard>
 
-          <ProjectedCashFlowReport formData={formData} data={results} />
-          <div className="page-break" />
+          <ReportCard title="Means of Finance" description="Funding structure">
+            <MeansOfFinanceReport formData={formData} />
+            <CapitalSubsidyReport formData={formData} />
+          </ReportCard>
 
-          <KeyRatiosReport data={results} />
-          <div className="page-break" />
+          <ReportCard title="Projected Cash Flow" description="Yearly cash flow projections">
+            <ProjectedCashFlowReport formData={formData} data={results} />
+          </ReportCard>
 
-          <ProjectedBalanceSheetReport formData={formData} data={results} />
-          <div className="page-break" />
+          <ReportCard title="Key Ratios" description="Financial ratios summary">
+            <KeyRatiosReport data={results} />
+          </ReportCard>
 
-          <ProjectedProfitabilityReport data={results} />
-          <div className="page-break" />
+          <ReportCard title="Balance Sheet" description="Projected balance sheet">
+            <ProjectedBalanceSheetReport formData={formData} data={results} />
+          </ReportCard>
 
-          <ComputationOfProductionReport formData={formData} data={results} />
-          <div className="page-break" />
+          <ReportCard title="Profitability" description="Projected profit and loss">
+            <ProjectedProfitabilityReport data={results} />
+          </ReportCard>
 
-          <ComputationOfWorkingCapitalRequirementReport
-            formData={formData}
-            data={results}
-          />
-          <div className="page-break" />
+          <ReportCard title="Production" description="Computation of production">
+            <ComputationOfProductionReport formData={formData} data={results} />
+          </ReportCard>
 
-          <ComputationOfDepreciationReport data={results} />
-          <div className="page-break" />
+          <ReportCard title="Working Capital Requirement" description="Computation of working capital requirement">
+            <ComputationOfWorkingCapitalRequirementReport
+              formData={formData}
+              data={results}
+            />
+          </ReportCard>
 
-          <RepaymentScheduleReport formData={formData} data={results} />
-          <div className="page-break" />
+          <ReportCard title="Depreciation" description="Computation of depreciation">
+            <ComputationOfDepreciationReport data={results} />
+          </ReportCard>
 
-          <DSCRReport formData={formData} data={results} />
+          <ReportCard title="Repayment Schedule" description="Loan repayment schedule">
+            <RepaymentScheduleReport formData={formData} data={results} />
+          </ReportCard>
+
+          <ReportCard title="DSCR" description="Debt service coverage ratio">
+            <DSCRReport formData={formData} data={results} />
+          </ReportCard>
 
           <button
             onClick={exportToPdf}

@@ -1,5 +1,6 @@
 import { Input, Textarea, Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Field } from "@/components/forms/Field";
 import type { Control } from "react-hook-form";
 import type { FormValues } from "@/types/formTypes";
 
@@ -8,17 +9,9 @@ export default function BusinessDetails({ control }: { control: Control<FormValu
     <section className="border border-slate-200 rounded-md p-6 shadow-sm">
       <h2 className="text-lg font-semibold mb-4 text-slate-700">1️⃣ Business Details</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          control={control}
-          name="businessName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Business Name</FormLabel>
-              <FormControl><Input {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Field control={control} name="businessName" label="Business Name">
+          {(field) => <Input {...field} />}
+        </Field>
 
         <FormField
           control={control}
@@ -44,17 +37,9 @@ export default function BusinessDetails({ control }: { control: Control<FormValu
           )}
         />
 
-        <FormField
-          control={control}
-          name="ownerName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Owner Name</FormLabel>
-              <FormControl><Input {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Field control={control} name="ownerName" label="Owner Name">
+          {(field) => <Input {...field} />}
+        </Field>
 
         <FormField
           control={control}
