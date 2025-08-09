@@ -31,6 +31,7 @@ export interface CostItem {
   marginPercent: number;
   amount: number;
   depreciationRate?: number;
+  assetType: 'Fixed' | 'Current';
 }
 
 export interface FundingLoans {
