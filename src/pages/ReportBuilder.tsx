@@ -66,11 +66,41 @@ export default function ReportBuilder() {
 
       // Cost of Project
       costItems: [
-        { type: 'Machinery & Equipment', marginPercent: 0, amount: 0, depreciationRate: 0 },
-        { type: 'Furniture / Fixtures', marginPercent: 0, amount: 0, depreciationRate: 0 },
-        { type: 'Other Fixed Assets', marginPercent: 0, amount: 0, depreciationRate: 0 },
-        { type: 'Pre-operating Expenses', marginPercent: 0, amount: 0, depreciationRate: 0 },
-        { type: 'Working Capital Requirement', marginPercent: 15, amount: 0, depreciationRate: 0 },
+        {
+          type: 'Machinery & Equipment',
+          marginPercent: 0,
+          amount: 0,
+          depreciationRate: 0,
+          assetType: 'Fixed',
+        },
+        {
+          type: 'Furniture / Fixtures',
+          marginPercent: 0,
+          amount: 0,
+          depreciationRate: 0,
+          assetType: 'Fixed',
+        },
+        {
+          type: 'Other Fixed Assets',
+          marginPercent: 0,
+          amount: 0,
+          depreciationRate: 0,
+          assetType: 'Fixed',
+        },
+        {
+          type: 'Pre-operating Expenses',
+          marginPercent: 0,
+          amount: 0,
+          depreciationRate: 0,
+          assetType: 'Fixed',
+        },
+        {
+          type: 'Working Capital Requirement',
+          marginPercent: 15,
+          amount: 0,
+          depreciationRate: 0,
+          assetType: 'Current',
+        },
       ],
 
       // Funding / Loans
