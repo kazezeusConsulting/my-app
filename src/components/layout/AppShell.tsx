@@ -18,7 +18,7 @@ export default function AppShell({ children, toolbar }: AppShellProps) {
           <ul className="space-y-2 text-sm">
             <li>
               <NavLink
-                to="/report"
+                to="/app/report"
                 className={({ isActive }) =>
                   cn(
                     'block rounded-md px-3 py-2 hover:bg-blue-800',
@@ -29,9 +29,35 @@ export default function AppShell({ children, toolbar }: AppShellProps) {
                 Project Report
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/app/clients"
+                className={({ isActive }) =>
+                  cn(
+                    'block rounded-md px-3 py-2 hover:bg-blue-800',
+                    isActive && 'bg-blue-800'
+                  )
+                }
+              >
+                Clients
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/app/saved-reports"
+                className={({ isActive }) =>
+                  cn(
+                    'block rounded-md px-3 py-2 hover:bg-blue-800',
+                    isActive && 'bg-blue-800'
+                  )
+                }
+              >
+                Saved Reports
+              </NavLink>
+            </li>
           </ul>
         </div>
-        <div className="flex items-center justify-between gap-2 pt-4">
+        <div className="flex items-center justify-between gap-2 border-t border-white/20 pt-4 mt-4">
           {toolbar}
           <ThemeToggle />
           <SignedIn>

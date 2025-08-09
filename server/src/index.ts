@@ -42,6 +42,33 @@ app.get('/api/clients', requireAuth(), async (req, res) => {
   }
 });
 
+app.post('/api/clients', requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  const { name, userEmail } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO users (clerk_id, email) VALUES ($1, $2) ON CONFLICT (clerk_id) DO NOTHING',
+      [userId, userEmail]
+    );
+
+    const {
+      rows: [userRow],
+    } = await pool.query('SELECT id FROM users WHERE clerk_id = $1', [userId]);
+
+    const {
+      rows: [clientRow],
+    } = await pool.query(
+      'INSERT INTO clients (user_id, name) VALUES ($1, $2) ON CONFLICT (user_id, name) DO UPDATE SET name = EXCLUDED.name RETURNING id',
+      [userRow.id, name]
+    );
+
+    res.status(201).json({ clientId: clientRow.id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save client' });
+  }
+});
+
 app.get('/api/reports', requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
   try {
@@ -61,6 +88,30 @@ app.get('/api/reports', requireAuth(), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch reports' });
+  }
+});
+
+app.get('/api/reports/:id', requireAuth(), async (req, res) => {
+  const { userId } = getAuth(req);
+  const { id } = req.params;
+  try {
+    const {
+      rows: [row],
+    } = await pool.query(
+      `SELECT reports.id, reports.data, reports.created_at,
+              projects.name AS project_name,
+              clients.name AS client_name
+       FROM reports
+       JOIN projects ON reports.project_id = projects.id
+       JOIN clients ON projects.client_id = clients.id
+       JOIN users ON projects.user_id = users.id
+       WHERE users.clerk_id = $1 AND reports.id = $2`,
+      [userId, id]
+    );
+    res.json({ report: row });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch report' });
   }
 });
 

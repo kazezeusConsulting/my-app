@@ -5,9 +5,9 @@
 export interface BusinessDetails {
   businessName: string;
   constitutionType: string;
-  ownerName: string;
+  clientName: string;
   mobile: string;             // MOBILE on cover
-  email: string;              
+  email: string;
   projectType: string;        // TYPE OF PROJECT on cover
   address: string;
   industryType: string;        // CATEGORY on cover

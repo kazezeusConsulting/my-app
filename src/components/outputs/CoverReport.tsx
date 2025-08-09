@@ -19,7 +19,7 @@ export default function CoverReport({ formData }: Props) {
           </tr>
           <tr>
             <td className="border border-gray-300 p-2 font-semibold">Name of Proprietor</td>
-            <td className="border border-gray-300 p-2">{formData.ownerName}</td>
+            <td className="border border-gray-300 p-2">{formData.clientName}</td>
           </tr>
           <tr>
             <td className="border border-gray-300 p-2 font-semibold">Category</td>
